@@ -169,7 +169,7 @@ COMMANDS = {
         ]
     },
     "edit": {
-        "desc": "Modify current game state by editing parameters of an existing joker card or playing card in hand",
+        "desc": "Modify current game state by editing parameters of itself, poker hand, existing joker card or playing card in hand",
         "command_name": ["edit", "e"],
         "command_target": [TARGETS["state"]["name"], TARGETS["poker_hand"]["name"], TARGETS["joker"]["name"], TARGETS["playing_card"]["name"]],
         "command_args": [
