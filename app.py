@@ -361,14 +361,3 @@ if __name__ == '__main__':
     sim = Simulation()
     app = AppCommandLine(sim)
     app.start()
-
-#TODO: add readme.md and push TODOs into it
-#TODO: upload project to github
-#TODO: add print/input logger so that it would be easier to print separators | also fix the issue with status return, so that it only breaks execution when actual error occurs
-#TODO: add option to adjust joker condition varieties
-#TODO: breakdown long functions in files into smaller functions to improve code readability
-#TODO: implement save/load feature - maybe by implementing _repr__ functon in objects
-#TODO: implement condition_variety in jokers - display them in joker __str__ and add them to the "edit" command
-#TODO: 
-#TODO: for future, maybe add some way to load game state based on state in actual game
-#TODO: for future, add GUI
