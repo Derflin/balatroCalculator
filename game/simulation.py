@@ -223,9 +223,11 @@ class Simulation:
             return self.jokers[index]["card"].getConditionVariety()
         return None
     
-    #TODO: https://stackoverflow.com/questions/9539921/how-do-i-define-a-function-with-optional-arguments
-    def setJokerConditionVariety(self, *args, **kwargs):
-        pass
+    def setJokerConditionVariety(self, index, condition_variety):
+        if index >= 0 and index < len(self.jokers):
+            self.jokers[index]["card"].setConditionVariety(condition_variety)
+            return True
+        return False
 
     def setJokerLevel(self, index, value):
         if index >= 0 and index < len(self.jokers):

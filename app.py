@@ -305,6 +305,11 @@ class AppCommandLine:
             level = None if "level" not in command_args else command_args["level"]
             add_sell_value = None if "add_sell_value" not in command_args else command_args["add_sell_value"]
             active = None if "active" not in command_args else command_args["active"]
+            condition_variety = {}
+            if "cond_card_suit" in command_args:
+                condition_variety["card_suit"] = command_args["cond_card_suit"]
+            if "cond_card_rank" in command_args:
+                condition_variety["card_rank"] = command_args["cond_card_rank"]
 
             if status and edition_id is not None:
                 status = self.sim.setJokerEdition(index, edition_id)
@@ -314,6 +319,8 @@ class AppCommandLine:
                 status = self.sim.setJokerAdditionalSellValue(index, level)
             if status and active is not None:
                 status = self.sim.setJokerActive(index, active)
+            if status and len(condition_variety) > 0:
+                status = self.sim.setJokerConditionVariety(index, condition_variety)
 
         elif command_target in PLAYING_CARD_TARGET:
             suit_id = None if "suit_id" not in command_args else command_args["suit_id"]

@@ -270,6 +270,18 @@ COMMANDS = {
                 "target": TARGETS["joker"]["name"]
             },
             {
+                "name": "cond_card_suit",
+                "desc": "ID of card suit to be set in joker conditions (applicable only to jokers with \"card_suit\" condition variety assigned to them)",
+                "required": False,
+                "target": TARGETS["joker"]["name"]
+            },
+            {
+                "name": "cond_card_rank",
+                "desc": "ID of card rank to be set in joker conditions (applicable only to jokers with \"card_rank\" condition variety assigned to them)",
+                "required": False,
+                "target": TARGETS["joker"]["name"]
+            },
+            {
                 "name": "index",
                 "desc": "Index of owned playing card in hand",
                 "required": True,

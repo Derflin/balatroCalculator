@@ -35,15 +35,19 @@ class JokerCard:
         pattern = '\n'.join((
             "{}{} | {}",
             "    -> Status: {}",
-            "    -> Effect: {}",
+            "    -> Effect Active: {}",
+            "    -> Effect Passive: {}",
             "    -> Condition: {}",
             "    -> Sell Value: {}"
         ))
         level = F" Lv. {self.level}" if self.upgrade is not None else ""
         rarity_name = JOKER_RARITY[self.rarity_id]["name"]
         status = "ACTIVE" if self.active else "DEBUFFED"
-        condition = "None" if not self.condition else self.condition
-        result_text = pattern.format(self.name, level, rarity_name, status, self.effect_active, condition, self.getSellValue())
+        effect_active = "None" if not self.effect_active else str(self.effect_active)
+        effect_passive = "None" if not self.effect_passive else " | ".join([key for key in self.effect_passive])
+        condition = "None" if not self.condition else str(self.condition)
+        condition += "" if not self.condition_variety else F" | Variety: {str(self.condition_variety)}"
+        result_text = pattern.format(self.name, level, rarity_name, status, effect_active, effect_passive, condition, self.getSellValue())
 
         additional_texts = [str(self.edition)]
         for text in additional_texts:
@@ -173,7 +177,8 @@ class JokerCard:
 
     def setConditionVariety(self, conditions_dict):
         for condition_name, condition_value in conditions_dict.items():
-            self.condition[condition_name] = condition_value
+            if condition_name in self.condition_variety:
+                self.condition[condition_name] = [condition_value]
 
     def getLevel(self):
         return self.level
