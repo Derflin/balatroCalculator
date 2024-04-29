@@ -22,12 +22,13 @@ App itself contains a "help" feature which should explain all the details regard
 
 ## TODO
 
+- [] Set command_names in the "app.py" file to be dependable on the details saved in "config.py"
 - [] Add print/input logger so that it would be easier to print separators | also fix the issue with status return, so that it only breaks execution when actual error occurs
-- [] Add option to adjust joker condition varieties
-- [] Refactor project - Breakdown long functions in files into smaller functions to improve code readability
-- [] Implement save/load feature - maybe by implementing _repr__ functon in objects
-- [] Implement condition_variety in jokers - display them in joker __str__ and add them to the "edit" command 
-- [] Implement adding jokers/playing cards based on their names, rather than ID from configuration file
+- [] Adjust displayed card_rank or card_suit in conditions, to include names apart from IDs
+- [] Refactor project - Breakdown long functions in files into smaller functions to improve code readability and remove reduntant/unnecesary functions
+- [] Add some usage examples to the README file 
+- [] Implement save/load feature - maybe by implementing _repr__ functon in objects 
+- [] Implement adding jokers/playing cards or changing editions/seals/enhancments/suits/rank based on their names, rather than ID from configuration file
 - [] Implement feature for optimizing joker/playing cards placement to maximize score 
 - [] Add option to load game state based on state in actual game
 - [] Add GUI
