@@ -4,6 +4,20 @@ from game.simulation import Simulation
 class AppCommandLine:
     def __init__(self, simulation):
         self.sim = simulation
+        self.commands_map = [
+            {"name": COMMANDS["show"]["command_name"], "func": lambda target, args: self.commandShow(target, args)},
+            {"name": COMMANDS["calc"]["command_name"], "func": lambda target, args: self.commandCalc(target, args)},
+            {"name": COMMANDS["select"]["command_name"], "func": lambda target, args: self.commandSelect(target, args)},
+            {"name": COMMANDS["add"]["command_name"], "func": lambda target, args: self.commandAdd(target, args)},
+            {"name": COMMANDS["remove"]["command_name"], "func": lambda target, args: self.commandRemove(target, args)},
+            {"name": COMMANDS["move"]["command_name"], "func": lambda target, args: self.commandMove(target, args)},
+            {"name": COMMANDS["swap"]["command_name"], "func": lambda target, args: self.commandSwap(target, args)},
+            {"name": COMMANDS["edit"]["command_name"], "func": lambda target, args: self.commandEdit(target, args)},
+            {"name": COMMANDS["save"]["command_name"], "func": lambda target, args: self.commandSave(target, args)},
+            {"name": COMMANDS["load"]["command_name"], "func": lambda target, args: self.commandLoad(target, args)},
+            {"name": COMMANDS["help"]["command_name"], "func": lambda target, args: self.commandHelp(target, args)},
+            {"name": COMMANDS["quit"]["command_name"], "func": lambda target, args: self.commandQuit(target, args)},
+        ]
 
     def start(self):
         print("Welcome to calculator for Balatro")
@@ -11,7 +25,8 @@ class AppCommandLine:
         self.printSeparator()
 
         # Prepare main app loop
-        while True:
+        self.running = True
+        while self.running:
             user_input = input('Type command: ')
             self.printSeparator()
 
@@ -30,42 +45,30 @@ class AppCommandLine:
                         arg_value -= 1
                     command_args[arg_name] = arg_value
 
-                status = True
-                match command_name:
-                    case "show" | "sh":
-                        status = self.commandShow(command_target, command_args)
-                    case "calc" | "c":
-                        status = self.commandCalc(command_target, command_args)
-                    case "select" | "sl":
-                        status = self.commandSelect(command_target, command_args)
-                    case "add" | "a":
-                        status = self.commandAdd(command_target, command_args)
-                    case "remove" | "r":
-                        status = self.commandRemove(command_target, command_args)
-                    case "move" | "m":
-                        status = self.commandMove(command_target, command_args)
-                    case "swap" | "sw":
-                        status = self.commandSwap(command_target, command_args)
-                    case "edit" | "e":
-                        status = self.commandEdit(command_target, command_args)
-                    case "save":
-                        status = self.commandSave(command_target, command_args)
-                    case "load":
-                        status = self.commandLoad(command_target, command_args)
-                    case "help" | "h":
-                        status = self.commandHelp(command_target, command_args)
-                    case "quit" | "q":
-                        exit()
-                    case _:
-                        print(F"-> Couldn't find a command called \"{command_name}\"")
-                        print("-> Please type \"h\" or \"help\" to check possible commands")
-                        self.printSeparator()
-                        status = False
+                status = self.parseCommand(command_name, command_target, command_args)
 
                 if not status:
                     break
                 else:
                     self.printSeparator()
+
+    def parseCommand(self, command_name, command_target, command_args):
+        status = True
+
+        found = False
+        for command in self.commands_map:
+            if command_name in command["name"]:
+                found = True
+                status = command["func"](command_target, command_args)
+                break
+
+        if not found:
+            status = False
+            print(F"-> Couldn't find a command called \"{command_name}\"")
+            print("-> Please type \"h\" or \"help\" to check possible commands")
+            self.printSeparator()
+
+        return status and found
 
     def printSeparator(self):
         print("-" * SEPARATOR_SIZE)
@@ -362,6 +365,10 @@ class AppCommandLine:
         #TODO
         print("-> Load: Not Implemented Yet")
         return True
+    
+    def commandQuit(self, command_target=None, command_args=None):
+        self.running = False
+        return False
 
 
 if __name__ == '__main__':

@@ -337,6 +337,12 @@ COMMANDS = {
         "command_target": [None],
         "command_args": []
     },
+    "help": {
+        "desc": "Display app manual",
+        "command_name": ["help", "h"],
+        "command_target": [None],
+        "command_args": []
+    },
     "quit": {
         "desc": "Close the app",
         "command_name": ["quit", "q"],
@@ -344,3 +350,5 @@ COMMANDS = {
         "command_args": []
     }
 }
+
+COMMANDS["help"]["command_target"] += [key for key in COMMANDS.keys()]
