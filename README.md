@@ -23,7 +23,8 @@ App itself contains a "help" feature which should explain all the details regard
 ## TODO
 
 - [] Set command_names in the "app.py" file to be dependable on the details saved in "config.py"
-- [] Add print/input logger so that it would be easier to print separators | also fix the issue with status return, so that it only breaks execution when actual error occurs
+- [] Add print/input logger so that it would be easier to print separators and indentation | also fix the issue with status return, so that it only breaks execution when actual error occurs
+- [] Update static data to be compatible with 1.0.1f update 
 - [] Adjust displayed card_rank or card_suit in conditions, to include names apart from IDs
 - [] Refactor project - Breakdown long functions in files into smaller functions to improve code readability and remove reduntant/unnecesary functions
 - [] Add some usage examples to the README file 
