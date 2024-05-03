@@ -39,7 +39,7 @@ COMMANDS = {
     },
     "select": {
         "desc": "Trigger card selection for a playing card in hand",
-        "command_name": ["show", "sh"],
+        "command_name": ["select", "sl"],
         "command_target": [None, TARGETS["playing_card"]["name"]],
         "command_args": [
             {
