@@ -1,9 +1,14 @@
-from config import COMMANDS, TARGETS, STATE_TARGET, POKER_HAND_TARGET, JOKER_TARGET, PLAYING_CARD_TARGET, SEPARATOR_SIZE
+import logging
+import sys
+
+from config import COMMANDS, TARGETS, STATE_TARGET, POKER_HAND_TARGET, JOKER_TARGET, PLAYING_CARD_TARGET, SEPARATOR, INDENT
+from game.logger import GameFormatter
 from game.simulation import Simulation
 
 class AppCommandLine:
-    def __init__(self, simulation):
-        self.sim = simulation
+    def __init__(self):
+        self.__setLoggers__()
+        self.sim = Simulation()
         self.commands_map = [
             {"name": COMMANDS["show"]["command_name"], "func": lambda target, args: self.commandShow(target, args)},
             {"name": COMMANDS["calc"]["command_name"], "func": lambda target, args: self.commandCalc(target, args)},
@@ -18,17 +23,33 @@ class AppCommandLine:
             {"name": COMMANDS["help"]["command_name"], "func": lambda target, args: self.commandHelp(target, args)},
             {"name": COMMANDS["quit"]["command_name"], "func": lambda target, args: self.commandQuit(target, args)},
         ]
+        self.help_command_string = " or ".join(["\"" + name + "\"" for name in COMMANDS["help"]["command_name"]])
+
+    def __setLoggers__(self):
+        # Set logger for current object
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+        stdout_handler = logging.StreamHandler(sys.stdout)
+        stdout_handler.setFormatter(logging.Formatter('%(message)s'))
+        self.logger.addHandler(stdout_handler)
+
+        # Set logger for game objects
+        game_logger = logging.getLogger("game")
+        game_logger.setLevel(logging.INFO)
+        stdout_handler = logging.StreamHandler(sys.stdout)
+        stdout_handler.setFormatter(GameFormatter('%(message)s'))
+        game_logger.addHandler(stdout_handler)
 
     def start(self):
-        print("Welcome to calculator for Balatro")
-        print("Please type \"h\" or \"help\" to check possible commands")
-        self.printSeparator()
+        self.logger.info("Welcome to calculator for Balatro")
+        self.logger.info(F'Please type {self.help_command_string} to check possible commands')
+        self.logger.info(SEPARATOR)
 
         # Prepare main app loop
         self.running = True
         while self.running:
             user_input = input('Type command: ')
-            self.printSeparator()
+            self.logger.info(SEPARATOR)
 
             commands = user_input.split(";")
             for command in commands:
@@ -46,15 +67,13 @@ class AppCommandLine:
                     command_args[arg_name] = arg_value
 
                 status = self.parseCommand(command_name, command_target, command_args)
+                self.logger.info(SEPARATOR)
 
                 if not status:
                     break
-                else:
-                    self.printSeparator()
 
     def parseCommand(self, command_name, command_target, command_args):
         status = True
-
         found = False
         for command in self.commands_map:
             if command_name in command["name"]:
@@ -64,14 +83,10 @@ class AppCommandLine:
 
         if not found:
             status = False
-            print(F"-> Couldn't find a command called \"{command_name}\"")
-            print("-> Please type \"h\" or \"help\" to check possible commands")
-            self.printSeparator()
+            self.logger.info(F"Couldn't find a command called \"{command_name}\"")
+            self.logger.info(F'Please type {self.help_command_string} to check possible commands')
 
         return status and found
-
-    def printSeparator(self):
-        print("-" * SEPARATOR_SIZE)
 
     def commandHelp(self, command_target=None, command_args=None):
         if command_target is not None:
@@ -80,72 +95,72 @@ class AppCommandLine:
                 if command_target in command_details["command_name"]:
                     found = True
 
-                    print(F'-> Desc: {command_details["desc"]}')
+                    self.logger.info(F'-> Desc: {command_details["desc"]}')
                     
                     required = "[REQUIRED]" if None not in command_details["command_target"] else "[OPTIONAL]"
-                    print(F'-> {required} Command Targets: {"Not Supported" if len(command_details["command_target"]) == 0 else ""}')
+                    self.logger.info(F'-> {required} Command Targets: {"Not Supported" if len(command_details["command_target"]) == 0 else ""}')
                     for target_name in command_details["command_target"]:
                         if target_name is not None:
                             command_target_name = target_name if target_name is not None else "None" 
-                            print(F'     -- {command_target_name}')
+                            self.logger.info(INDENT + F'-- {command_target_name}')
                     
-                    print(F'-> Command Args: {"Not Supported" if len(command_details["command_args"]) == 0 else ""}')
+                    self.logger.info(F'-> Command Args: {"Not Supported" if len(command_details["command_args"]) == 0 else ""}')
                     for arg in command_details["command_args"]:
                         target = ("[" + arg["target"] + "]") if arg["target"] is not None else "[All]"
                         required = "[REQUIRED]" if arg["required"] else "[OPTIONAL]"
                         command_arg_name = "\"" + arg["name"] + "\""
-                        print(F'     -- {target}{required} {command_arg_name} -> {arg["desc"]}')
+                        self.logger.info(INDENT + F'-- {target}{required} {command_arg_name} -> {arg["desc"]}')
 
                     break
 
             if not found:
-                print(F"-> Couldn't find a command called \"{command_target}\"")
-                print("-> Please type \"h\" or \"help\" to check possible commands")
+                self.logger.info(F"Couldn't find a command called \"{command_target}\"")
+                self.logger.info(F'Please type {self.help_command_string} to check possible commands')
 
         else:
-            print("This app is meant to be used as a score calculator for game \"Balatro\"")
-            print("---")
-            print("-> Command structure: [command_name] [command_target] [command_args]")
+            self.logger.info("This app is meant to be used as a score calculator for game \"Balatro\"")
+            self.logger.info("-----")
+            self.logger.info("Command structure: [command_name] [command_target] [command_args]")
 
-            print("-> \"[command_name]\" is used to determine which command should be executed and can be one of the following:")
+            self.logger.info("-> \"[command_name]\" is used to determine which command should be executed and can be one of the following:")
             for command_details in COMMANDS.values():
                 command_name = " or ".join(["\"" + name + "\"" for name in command_details["command_name"]])
-                print(F'     -- {command_name} -> {command_details["desc"]}')
+                self.logger.info(INDENT + F'-- {command_name} -> {command_details["desc"]}')
             
-            print("-> \"[command_target]\" is used to specify what game objects exactly should be affected by the command and these might be one of the following:")
+            self.logger.info("-> \"[command_target]\" is used to specify what game objects exactly should be affected by the command and these might be one of the following:")
             for target_details in TARGETS.values():
                 command_target = " or ".join(["\"" + name + "\"" for name in target_details["command_target"]])
-                print(F'     -- {command_target} -> {target_details["name"]}')
+                self.logger.info(INDENT + F'-- {command_target} -> {target_details["name"]}')
             
-            print("-> \"[command_args]\" is used to specify additional parameters that can be passed along with the command")
-            print("     -- Syntax for the additional command arguments is: \"-[arg_name]=[arg_value]\"")
-            print("     -- If there is more than one additional argument passed, every additional argument should be seperated from previous one by blank space")
+            self.logger.info("-> \"[command_args]\" is used to specify additional parameters that can be passed along with the command")
+            self.logger.info(INDENT + "-- Syntax for the additional command arguments is: \"-[arg_name]=[arg_value]\"")
+            self.logger.info(INDENT + "-- If there is more than one additional argument passed, every additional argument should be seperated from previous one by blank space")
             
-            print("---")
-            print("You can also type \"help [command_name]\" in order to learn more about specific command and what [command_target] and [command_args] it supports")
+            self.logger.info("-----")
+            self.logger.info("You can also type \"help [command_name]\" in order to learn more about specific command and what [command_target] and [command_args] it supports")
         
         return True
 
     def commandShow(self, command_target=None, command_args=None):
         if command_target is None:
-            status = self.sim.printState()
-            print("-" * SEPARATOR_SIZE)
-            status = self.sim.printPokerHands()
-            print("-" * SEPARATOR_SIZE)
-            status = self.sim.printJokers()
-            print("-" * SEPARATOR_SIZE)
-            status = self.sim.printHand()
+            self.sim.printState()
+            self.logger.info(SEPARATOR)
+            self.sim.printPokerHands()
+            self.logger.info(SEPARATOR)
+            self.sim.printJokers()
+            self.logger.info(SEPARATOR)
+            self.sim.printHand()
         elif command_target in STATE_TARGET:
-            status = self.sim.printState()
+            self.sim.printState()
         elif command_target in POKER_HAND_TARGET:
-            status = self.sim.printPokerHands()
+            self.sim.printPokerHands()
         elif command_target in JOKER_TARGET:
-            status = self.sim.printJokers()
+            self.sim.printJokers()
         elif command_target in PLAYING_CARD_TARGET:
-            status = self.sim.printHand()
+            self.sim.printHand()
         else:
-            print("-> Stopped command processing")
-            print("-> ERROR: Unsupported command target")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Unsupported command target")
             return False
         
         return True
@@ -157,16 +172,18 @@ class AppCommandLine:
     def commandSelect(self, command_target=None, command_args=None):
         index = None if "index" not in command_args else command_args["index"]
         if index is None:
-            print("-> Stopped command processing")
-            print("-> ERROR: Missing required information about \"index\"")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Missing required information about \"index\"")
             return False
 
         status = True
         if command_target is None or command_target in PLAYING_CARD_TARGET:
             status = self.sim.triggerSelectPlayingCard(index)
 
-        if not status:
-            print("-> Issue occured while processing the command")
+        if status:
+            self.logger.info(F"Successfully triggered card selection for card with index {index}")
+        else:
+            self.logger.error("ERROR: Issue occured while processing the command")
         
         return status
 
@@ -174,8 +191,8 @@ class AppCommandLine:
         index = None if "index" not in command_args else command_args["index"]
         id = None if "id" not in command_args else command_args["id"]
         if id is None:
-            print("-> Stopped command processing")
-            print("-> ERROR: Missing required information about \"id\"")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Missing required information about \"id\"")
             return False
 
         if command_target is None or command_target in JOKER_TARGET:
@@ -195,8 +212,8 @@ class AppCommandLine:
             self.sim.addPlayingCard(id=id, suit_id=suit_id, index=index, enhancment_id=enhancment_id, edition_id=edition_id, seal_id=seal_id, add_chip=add_chip)
 
         else:
-            print("-> Stopped command processing")
-            print("-> ERROR: Unsupported command target")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Unsupported command target")
             return False
         
         return True
@@ -210,12 +227,12 @@ class AppCommandLine:
         elif command_target in PLAYING_CARD_TARGET:
             status = self.sim.removePlayingCard(index)
         else:
-            print("-> Stopped command processing")
-            print("-> ERROR: Unsupported command target")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Unsupported command target")
             return False
         
         if not status:
-            print("-> Issue occured while processing the command")
+            self.logger.error("ERROR: Issue occured while processing the command")
 
         return status
 
@@ -223,8 +240,8 @@ class AppCommandLine:
         index1 = None if "index1" not in command_args else command_args["index1"]
         index2 = None if "index2" not in command_args else command_args["index2"]
         if index1 is None or index2 is None:
-            print("-> Stopped command processing")
-            print("-> ERROR: Missing required information about \"index1\" or \"index2\"")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Missing required information about \"index1\" or \"index2\"")
             return False
 
         status = True
@@ -233,12 +250,12 @@ class AppCommandLine:
         elif command_target in PLAYING_CARD_TARGET:
             status = self.sim.movePositionPlayingCard(index1, index2)
         else:
-            print("-> Stopped command processing")
-            print("-> ERROR: Unsupported command target")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Unsupported command target")
             return False
 
         if not status:
-            print("-> Issue occured while processing the command")
+            self.logger.error("ERROR: Issue occured while processing the command")
 
         return status
 
@@ -246,8 +263,8 @@ class AppCommandLine:
         index1 = None if "index1" not in command_args else command_args["index1"]
         index2 = None if "index2" not in command_args else command_args["index2"]
         if index1 is None or index2 is None:
-            print("-> Stopped command processing")
-            print("-> ERROR: Missing required information about \"index1\" or \"index2\"")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Missing required information about \"index1\" or \"index2\"")
             return False
 
         status = True
@@ -256,20 +273,20 @@ class AppCommandLine:
         elif command_target in PLAYING_CARD_TARGET:
             status = self.sim.swapPositionPlayingCard(index1, index2)
         else:
-            print("-> Stopped command processing")
-            print("-> ERROR: Unsupported command target")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Unsupported command target")
             return False
 
         if not status:
-            print("-> Issue occured while processing the command")
+            self.logger.error("ERROR: Issue occured while processing the command")
 
         return status
 
     def commandEdit(self, command_target=None, command_args=None):
         index = None if "index" not in command_args else command_args["index"]
         if command_target not in STATE_TARGET and index is None:
-            print("-> Stopped command processing")
-            print("-> ERROR: Missing required information about \"index\"")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Missing required information about \"index\"")
             return False
 
         status = True
@@ -283,7 +300,7 @@ class AppCommandLine:
             discard_remain = None if "discard_remain" not in command_args else command_args["discard_remain"]
             card_deck_remain = None if "card_deck_remain" not in command_args else command_args["card_deck_remain"]
             
-            self.sim.setState(
+            status = self.sim.setState(
                 skipped_blinds=skipped_blinds,
                 dollar_count=dollar_count,
                 joker_count_max=joker_count_max,
@@ -347,23 +364,23 @@ class AppCommandLine:
                 status = self.sim.setPlayingCardActive(index, active)
 
         else:
-            print("-> Stopped command processing")
-            print("-> ERROR: Unsupported command target")
+            self.logger.info("Stopped command processing")
+            self.logger.error("ERROR: Unsupported command target")
             return False
 
         if not status:
-            print("-> Issue occured while processing the command")
+            self.logger.error("ERROR: Issue occured while processing the command")
 
         return status
 
     def commandSave(self, command_target=None, command_args=None):
         #TODO
-        print("-> Save: Not Implemented Yet")
+        self.logger.info("-> Save: Not Implemented Yet")
         return True
 
     def commandLoad(self, command_taget=None, command_args=None):
         #TODO
-        print("-> Load: Not Implemented Yet")
+        self.logger.info("-> Load: Not Implemented Yet")
         return True
     
     def commandQuit(self, command_target=None, command_args=None):
@@ -372,6 +389,5 @@ class AppCommandLine:
 
 
 if __name__ == '__main__':
-    sim = Simulation()
-    app = AppCommandLine(sim)
+    app = AppCommandLine()
     app.start()

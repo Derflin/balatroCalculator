@@ -1,12 +1,16 @@
+import logging
+
 from game.static import GAME_SCORING_ORDER, POKER_HANDS, FACE_CARD_IDS, STONE_CARD_ID, CARD_SUIT, STONE_CARD_SUIT, CARD_RANK, DEFAULT_DECK_SIZE, DEFAULT_JOKER_COUNT_MAX
 from game.objects.pokerHand import PokerHand
 from game.objects.playingCard import PlayingCard
 from game.objects.jokerCard import JokerCard
 
-SCIENTIFIC_NOTATION_MIN_VALUE = SCIENTIFIC_NOTATION_MIN_VALUE = pow(10, 10)
+SCIENTIFIC_NOTATION_MIN_VALUE = pow(10, 10)
 
 class Simulation:
     def __init__(self):
+        self.__setLoggers__()
+
         self.state = {
             "skipped_blinds": 0,
             "dollar_count": 0,
@@ -30,6 +34,10 @@ class Simulation:
 
         self.jokers = []
         self.cur_joker_index = None
+
+    def __setLoggers__(self):
+        # Set logger for current object
+        self.logger = logging.getLogger(__name__)
 
     def getState(self, key = None):
         if key is not None:
@@ -59,6 +67,8 @@ class Simulation:
             self.state["discard_remain"] = discard_remain
         if card_deck_remain is not None:
             self.state["card_deck_remain"] = card_deck_remain
+
+        return True
 
     def getPokerHandLevel(self, index):
         if index >= 0 and index < len(self.poker_hands):
@@ -1003,40 +1013,34 @@ class Simulation:
         return cur_score
     
     def printState(self):
-        print("State:")
+        self.logger.info("State:")
         for name, value in self.state.items():
-            print(F"    -> {name}: {value}")
-
-        return True
+            self.logger.info(F"-> {name}: {value}")
 
     def printPokerHands(self, index=None):
-        if len(self.poker_hands) == 0:
-            return False
+        self.logger.info("Poker hands: None" if len(self.poker_hands) == 0 else "Poker hands:")
         
         if index is not None:
             if index >= 0 and index < len(self.poker_hands):
-                print(F"Poker hand: {self.poker_hands[index]}")
+                self.logger.info(F"{index + 1}) {self.poker_hands[index]}")
             else:
-                return False
+                self.logger.error("ERROR: Index out of scope")
         else:
             for index in range(len(self.poker_hands)):
-                print(F"{index + 1}) {self.poker_hands[index]}")
-
-        return True
+                self.logger.info(F"{index + 1}) {self.poker_hands[index]}")
 
     def printHand(self, index=None):
-        if len(self.hand["cards"]) == 0:
-            return False
+        self.logger.info("Cards: None" if len(self.hand["cards"]) == 0 else "Cards")
         
         if index is not None:
             if index >= 0 and index < len(self.hand["cards"]):
                 card = self.hand["cards"][index]["card"]
                 selected = self.hand['cards'][index]['selected']
 
-                print(F"Card: {card}")
-                print(F"Selected: {str(selected)}")
+                self.logger.info(F"Card: {card}")
+                self.logger.info(F"Selected: {str(selected)}")
             else:
-                return False
+                self.logger.error("ERROR: Index out of scope")
         else:
             selected_indexes = []
             for index in range(len(self.hand["cards"])):
@@ -1045,29 +1049,24 @@ class Simulation:
                 if selected:
                     selected_indexes.append(index + 1)
 
-                print(F"{index + 1}) {card}")
+                self.logger.info(F"{index + 1}) {card}")
             
-            print("---")
-            print(F"Selected: {selected_indexes}")
-
-        return True
+            self.logger.info("---")
+            self.logger.info(F"Selected: {selected_indexes}")
 
     def printJokers(self, index=None):
-        if len(self.jokers) == 0:
-            return False
+        self.logger.info("Jokers: None" if len(self.jokers) == 0 else "Jokers:")
         
         if index is not None:
             if index >= 0 and index < len(self.jokers):
                 joker = self.jokers[index]["card"]
-                print(F"Joker: {joker}")
+                self.logger.info(F"Joker: {joker}")
             else:
-                return False
+                self.logger.error("ERROR: Index out of scope")
         else:
             for index in range(len(self.jokers)):
                 joker = self.jokers[index]["card"]
-                print(F"{index + 1}) {joker}")
-
-        return True
+                self.logger.info(F"{index + 1}) {joker}")
     
     def printCalculatedScore(self):
         calculated_score = self.calculateScore()
@@ -1077,8 +1076,8 @@ class Simulation:
             result = calculated_score["min_chip"] * calculated_score["min_mult"]
             if result > SCIENTIFIC_NOTATION_MIN_VALUE: result = "{:.2E}".format(result)
             
-            print(F"Calculated score:")
-            print(F"    -> {chip} Chip x {mult} Mult = {result} Points")
+            self.logger.info(F"Calculated score:")
+            self.logger.info(F"    -> {chip} Chip x {mult} Mult = {result} Points")
         else:
             min_chip = calculated_score["min_chip"] if calculated_score["min_chip"] < SCIENTIFIC_NOTATION_MIN_VALUE else "{:.2E}".format(calculated_score["min_chip"])
             min_mult = calculated_score["min_mult"] if calculated_score["min_mult"] < SCIENTIFIC_NOTATION_MIN_VALUE else "{:.2E}".format(calculated_score["min_mult"])
@@ -1090,6 +1089,6 @@ class Simulation:
             max_result = calculated_score["max_chip"] * calculated_score["max_mult"]
             if max_result > SCIENTIFIC_NOTATION_MIN_VALUE: max_result = "{:.2E}".format(max_result)
             
-            print(F"Calculated score:")
-            print(F"    -> Min: {min_chip} Chip x {min_mult} Mult = {min_result} Points")
-            print(F"    -> Max: {max_chip} Chip x {max_mult} Mult = {max_result} Points")
+            self.logger.info(F"Calculated score:")
+            self.logger.info(F"    -> Min: {min_chip} Chip x {min_mult} Mult = {min_result} Points")
+            self.logger.info(F"    -> Max: {max_chip} Chip x {max_mult} Mult = {max_result} Points")
