@@ -1,3 +1,4 @@
+from config import INDENT
 from game.static import POKER_HANDS
 
 class PokerHand:
@@ -22,8 +23,8 @@ class PokerHand:
     def __str__(self):
         pattern = '\n'.join((
             "{} Lv. {}",
-            "    -> Effect: {} Chip x {} Mult",
-            "    -> Upgrade: {} Chip AND {} Mult",
+            INDENT + "-> Effect: {} Chip x {} Mult",
+            INDENT + "-> Upgrade: {} Chip AND {} Mult",
         ))
 
         base_score_modifier = self.getBaseScoreModifier()

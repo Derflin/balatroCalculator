@@ -1,3 +1,4 @@
+from config import INDENT
 from game.static import CARD_RANK, STONE_CARD_ID, STONE_CARD_RANK, CARD_SUIT, STONE_CARD_SUIT
 from game.objects.cardEdition import CardEdition
 from game.objects.cardEnhancment import CardEnhancment
@@ -26,8 +27,8 @@ class PlayingCard:
     def __str__(self):
         pattern = '\n'.join((
             "{} of {}",
-            "    -> Status: {}",
-            "    -> Effect: {} Chip + {} Additional Chip"
+            INDENT + "-> Status: {}",
+            INDENT + "-> Effect: {} Chip + {} Additional Chip"
         ))
         status = "ACTIVE" if self.active else "DEBUFFED"
         base_chip = (self.getEffectActive("b_add_chip") * self.getEffectActive("m_add_chip"))
@@ -37,7 +38,7 @@ class PlayingCard:
         additional_texts = [str(self.edition), str(self.enhancment), str(self.seal)]
         for text in additional_texts:
             if text != "":
-                result_text += F"\n    -> {text}"
+                result_text += F"\n{INDENT}-> {text}"
 
         return result_text
 

@@ -1,5 +1,6 @@
 import logging
 
+from config import INDENT
 from game.static import GAME_SCORING_ORDER, POKER_HANDS, FACE_CARD_IDS, STONE_CARD_ID, CARD_SUIT, STONE_CARD_SUIT, CARD_RANK, DEFAULT_DECK_SIZE, DEFAULT_JOKER_COUNT_MAX
 from game.objects.pokerHand import PokerHand
 from game.objects.playingCard import PlayingCard
@@ -1077,7 +1078,7 @@ class Simulation:
             if result > SCIENTIFIC_NOTATION_MIN_VALUE: result = "{:.2E}".format(result)
             
             self.logger.info(F"Calculated score:")
-            self.logger.info(F"    -> {chip} Chip x {mult} Mult = {result} Points")
+            self.logger.info(F"{INDENT}-> {chip} Chip x {mult} Mult = {result} Points")
         else:
             min_chip = calculated_score["min_chip"] if calculated_score["min_chip"] < SCIENTIFIC_NOTATION_MIN_VALUE else "{:.2E}".format(calculated_score["min_chip"])
             min_mult = calculated_score["min_mult"] if calculated_score["min_mult"] < SCIENTIFIC_NOTATION_MIN_VALUE else "{:.2E}".format(calculated_score["min_mult"])
@@ -1090,5 +1091,5 @@ class Simulation:
             if max_result > SCIENTIFIC_NOTATION_MIN_VALUE: max_result = "{:.2E}".format(max_result)
             
             self.logger.info(F"Calculated score:")
-            self.logger.info(F"    -> Min: {min_chip} Chip x {min_mult} Mult = {min_result} Points")
-            self.logger.info(F"    -> Max: {max_chip} Chip x {max_mult} Mult = {max_result} Points")
+            self.logger.info(F"{INDENT}-> Min: {min_chip} Chip x {min_mult} Mult = {min_result} Points")
+            self.logger.info(F"{INDENT}-> Max: {max_chip} Chip x {max_mult} Mult = {max_result} Points")

@@ -1,3 +1,4 @@
+from config import INDENT
 from game.static import CARD_EDITIONS
 
 class CardEdition:

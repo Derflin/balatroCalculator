@@ -1,5 +1,6 @@
 import math
 
+from config import INDENT
 from game.static import JOKERS, JOKER_RARITY, DEFAULT_DECK_SIZE, CARD_RANK_STID
 from game.objects.cardEdition import CardEdition
 
@@ -34,11 +35,11 @@ class JokerCard:
     def __str__(self):
         pattern = '\n'.join((
             "{}{} | {}",
-            "    -> Status: {}",
-            "    -> Effect Active: {}",
-            "    -> Effect Passive: {}",
-            "    -> Condition: {}",
-            "    -> Sell Value: {}"
+            INDENT + "-> Status: {}",
+            INDENT + "-> Effect Active: {}",
+            INDENT + "-> Effect Passive: {}",
+            INDENT + "-> Condition: {}",
+            INDENT + "-> Sell Value: {}"
         ))
         level = F" Lv. {self.level}" if self.upgrade is not None else ""
         rarity_name = JOKER_RARITY[self.rarity_id]["name"]
@@ -52,7 +53,7 @@ class JokerCard:
         additional_texts = [str(self.edition)]
         for text in additional_texts:
             if text != "":
-                result_text += F"\n    -> {text}"
+                result_text += F"\n{INDENT}-> {text}"
 
         return result_text
 

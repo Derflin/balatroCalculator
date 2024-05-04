@@ -1,3 +1,4 @@
+from config import INDENT
 from game.static import CARD_ENHANCMENTS
 
 class CardEnhancment:

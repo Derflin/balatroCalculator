@@ -1,3 +1,4 @@
+from config import INDENT
 from game.static import CARD_SEALS
 
 class CardSeal:
@@ -19,7 +20,7 @@ class CardSeal:
         if len(score_modifier) > 0:
             result_text = F"Seal: {self.name} -> Score modifier: {score_modifier}"
         else:
-            result_text = F"Enhancment: {self.name}"
+            result_text = F"Seal: {self.name}"
         
         return result_text
 
