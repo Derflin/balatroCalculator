@@ -181,7 +181,7 @@ class AppCommandLine:
             status = self.sim.triggerSelectPlayingCard(index)
 
         if status:
-            self.logger.info(F"Successfully triggered card selection for card with index {index}")
+            self.logger.info(F"Triggered card selection for card with index {index + 1}")
         else:
             self.logger.error("Issue occured while processing the command")
         
@@ -195,12 +195,15 @@ class AppCommandLine:
             self.logger.error("Missing required information about \"id\"")
             return False
 
+        status = True
         if command_target is None or command_target in JOKER_TARGET:
             edition_id = None if "edition_id" not in command_args else command_args["edition_id"]
             level = None if "level" not in command_args else command_args["level"]
             add_sell_value = None if "add_sell_value" not in command_args else command_args["add_sell_value"]
 
-            self.sim.addJoker(id=id, index=index, edition_id=edition_id, level=level, add_sell_value=add_sell_value)
+            status = self.sim.addJoker(id=id, index=index, edition_id=edition_id, level=level, add_sell_value=add_sell_value)
+            if status:
+                self.logger.info("Added new joker card")
 
         elif command_target is None or command_target in PLAYING_CARD_TARGET:
             suit_id = None if "suit_id" not in command_args else command_args["suit_id"]
@@ -209,12 +212,17 @@ class AppCommandLine:
             seal_id = None if "seal_id" not in command_args else command_args["seal_id"]
             add_chip = None if "add_chip" not in command_args else command_args["add_chip"]
 
-            self.sim.addPlayingCard(id=id, suit_id=suit_id, index=index, enhancment_id=enhancment_id, edition_id=edition_id, seal_id=seal_id, add_chip=add_chip)
+            status = self.sim.addPlayingCard(id=id, suit_id=suit_id, index=index, enhancment_id=enhancment_id, edition_id=edition_id, seal_id=seal_id, add_chip=add_chip)
+            if status:
+                self.logger.info("Added new playing card to hand")
 
         else:
             self.logger.info("Stopped command processing")
             self.logger.error("Unsupported command target")
             return False
+        
+        if not status:
+            self.logger.error("Issue occured while processing the command")
         
         return True
 
@@ -224,8 +232,12 @@ class AppCommandLine:
         status = True
         if command_target in JOKER_TARGET:
             status = self.sim.removeJoker(index)
+            if status:
+                self.logger.info("Removed joker card")
         elif command_target in PLAYING_CARD_TARGET:
             status = self.sim.removePlayingCard(index)
+            if status:
+                self.logger.info("Removed playing card from hand")
         else:
             self.logger.info("Stopped command processing")
             self.logger.error("Unsupported command target")
@@ -247,8 +259,12 @@ class AppCommandLine:
         status = True
         if command_target in JOKER_TARGET:
             status = self.sim.movePositionJoker(index1, index2)
+            if status:
+                self.logger.info(F"Changed joker card position from {index1} to {index2}")
         elif command_target in PLAYING_CARD_TARGET:
             status = self.sim.movePositionPlayingCard(index1, index2)
+            if status:
+                self.logger.info(F"Changed playing card position in hand from {index1} to {index2}")
         else:
             self.logger.info("Stopped command processing")
             self.logger.error("Unsupported command target")
@@ -270,8 +286,12 @@ class AppCommandLine:
         status = True
         if command_target in JOKER_TARGET:
             status = self.sim.swapPositionJoker(index1, index2)
+            if status:
+                self.logger.info(F"Swapped positions of joker cards from {index1} and {index2}")
         elif command_target in PLAYING_CARD_TARGET:
             status = self.sim.swapPositionPlayingCard(index1, index2)
+            if status:
+                self.logger.info(F"Swapped positions of playing cards in hand from {index1} and {index2}")
         else:
             self.logger.info("Stopped command processing")
             self.logger.error("Unsupported command target")
@@ -311,6 +331,9 @@ class AppCommandLine:
                 card_deck_remain=card_deck_remain
             )
 
+            if status:
+                self.logger.info("Updated game state")
+
         elif command_target in POKER_HAND_TARGET:
             played_count = None if "played_count" not in command_args else command_args["played_count"]
             level = None if "level" not in command_args else command_args["level"]
@@ -319,6 +342,9 @@ class AppCommandLine:
                 status = self.sim.setPokerHandPlayedCount(index, played_count)
             if status and level is not None:
                 status = self.sim.setPokerHandLevel(index, level)
+
+            if status:
+                self.logger.info("Updated poker hand")
 
         elif command_target in JOKER_TARGET:
             edition_id = None if "edition_id" not in command_args else command_args["edition_id"]
@@ -342,6 +368,9 @@ class AppCommandLine:
             if status and len(condition_variety) > 0:
                 status = self.sim.setJokerConditionVariety(index, condition_variety)
 
+            if status:
+                self.logger.info("Updated joker card")
+
         elif command_target in PLAYING_CARD_TARGET:
             suit_id = None if "suit_id" not in command_args else command_args["suit_id"]
             enhancment_id = None if "enhancment_id" not in command_args else command_args["enhancment_id"]
@@ -362,6 +391,9 @@ class AppCommandLine:
                 status = self.sim.setPlayingCardAdditionalChip(index, add_chip)
             if status and active is not None:
                 status = self.sim.setPlayingCardActive(index, active)
+
+            if status:
+                self.logger.info("Updated playing card")
 
         else:
             self.logger.info("Stopped command processing")
@@ -384,6 +416,7 @@ class AppCommandLine:
         return True
     
     def commandQuit(self, command_target=None, command_args=None):
+        self.logger.info("Closing the app...")
         self.running = False
         return False
 

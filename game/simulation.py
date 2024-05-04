@@ -118,6 +118,8 @@ class Simulation:
 
         self.updateSelectedPokerHand()
 
+        return True
+
     def removePlayingCard(self, index):
         if index >= 0 and index < len(self.hand["cards"]):
             removed_elem = self.hand["cards"].pop(index)
@@ -212,6 +214,8 @@ class Simulation:
         self.setState(joker_count=len(self.jokers))
         self.updateJokerRules()
         self.updateSelectedPokerHand()
+
+        return True
 
     def removeJoker(self, index):
         if index >= 0 and index < len(self.jokers):
