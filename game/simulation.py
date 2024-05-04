@@ -1024,7 +1024,7 @@ class Simulation:
             if index >= 0 and index < len(self.poker_hands):
                 self.logger.info(F"{index + 1}) {self.poker_hands[index]}")
             else:
-                self.logger.error("ERROR: Index out of scope")
+                self.logger.error("Index out of scope")
         else:
             for index in range(len(self.poker_hands)):
                 self.logger.info(F"{index + 1}) {self.poker_hands[index]}")
@@ -1040,7 +1040,7 @@ class Simulation:
                 self.logger.info(F"Card: {card}")
                 self.logger.info(F"Selected: {str(selected)}")
             else:
-                self.logger.error("ERROR: Index out of scope")
+                self.logger.error("Index out of scope")
         else:
             selected_indexes = []
             for index in range(len(self.hand["cards"])):
@@ -1062,7 +1062,7 @@ class Simulation:
                 joker = self.jokers[index]["card"]
                 self.logger.info(F"Joker: {joker}")
             else:
-                self.logger.error("ERROR: Index out of scope")
+                self.logger.error("Index out of scope")
         else:
             for index in range(len(self.jokers)):
                 joker = self.jokers[index]["card"]

@@ -2,7 +2,7 @@ import logging
 import sys
 
 from config import COMMANDS, TARGETS, STATE_TARGET, POKER_HAND_TARGET, JOKER_TARGET, PLAYING_CARD_TARGET, SEPARATOR, INDENT
-from game.logger import GameFormatter
+from game.logger import AppFormatter
 from game.simulation import Simulation
 
 class AppCommandLine:
@@ -30,14 +30,14 @@ class AppCommandLine:
         self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
         stdout_handler = logging.StreamHandler(sys.stdout)
-        stdout_handler.setFormatter(logging.Formatter('%(message)s'))
+        stdout_handler.setFormatter(AppFormatter('%(message)s'))
         self.logger.addHandler(stdout_handler)
 
         # Set logger for game objects
         game_logger = logging.getLogger("game")
         game_logger.setLevel(logging.INFO)
         stdout_handler = logging.StreamHandler(sys.stdout)
-        stdout_handler.setFormatter(GameFormatter('%(message)s'))
+        stdout_handler.setFormatter(AppFormatter('%(message)s'))
         game_logger.addHandler(stdout_handler)
 
     def start(self):
@@ -160,7 +160,7 @@ class AppCommandLine:
             self.sim.printHand()
         else:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Unsupported command target")
+            self.logger.error("Unsupported command target")
             return False
         
         return True
@@ -173,7 +173,7 @@ class AppCommandLine:
         index = None if "index" not in command_args else command_args["index"]
         if index is None:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Missing required information about \"index\"")
+            self.logger.error("Missing required information about \"index\"")
             return False
 
         status = True
@@ -183,7 +183,7 @@ class AppCommandLine:
         if status:
             self.logger.info(F"Successfully triggered card selection for card with index {index}")
         else:
-            self.logger.error("ERROR: Issue occured while processing the command")
+            self.logger.error("Issue occured while processing the command")
         
         return status
 
@@ -192,7 +192,7 @@ class AppCommandLine:
         id = None if "id" not in command_args else command_args["id"]
         if id is None:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Missing required information about \"id\"")
+            self.logger.error("Missing required information about \"id\"")
             return False
 
         if command_target is None or command_target in JOKER_TARGET:
@@ -213,7 +213,7 @@ class AppCommandLine:
 
         else:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Unsupported command target")
+            self.logger.error("Unsupported command target")
             return False
         
         return True
@@ -228,11 +228,11 @@ class AppCommandLine:
             status = self.sim.removePlayingCard(index)
         else:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Unsupported command target")
+            self.logger.error("Unsupported command target")
             return False
         
         if not status:
-            self.logger.error("ERROR: Issue occured while processing the command")
+            self.logger.error("Issue occured while processing the command")
 
         return status
 
@@ -241,7 +241,7 @@ class AppCommandLine:
         index2 = None if "index2" not in command_args else command_args["index2"]
         if index1 is None or index2 is None:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Missing required information about \"index1\" or \"index2\"")
+            self.logger.error("Missing required information about \"index1\" or \"index2\"")
             return False
 
         status = True
@@ -251,11 +251,11 @@ class AppCommandLine:
             status = self.sim.movePositionPlayingCard(index1, index2)
         else:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Unsupported command target")
+            self.logger.error("Unsupported command target")
             return False
 
         if not status:
-            self.logger.error("ERROR: Issue occured while processing the command")
+            self.logger.error("Issue occured while processing the command")
 
         return status
 
@@ -264,7 +264,7 @@ class AppCommandLine:
         index2 = None if "index2" not in command_args else command_args["index2"]
         if index1 is None or index2 is None:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Missing required information about \"index1\" or \"index2\"")
+            self.logger.error("Missing required information about \"index1\" or \"index2\"")
             return False
 
         status = True
@@ -274,11 +274,11 @@ class AppCommandLine:
             status = self.sim.swapPositionPlayingCard(index1, index2)
         else:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Unsupported command target")
+            self.logger.error("Unsupported command target")
             return False
 
         if not status:
-            self.logger.error("ERROR: Issue occured while processing the command")
+            self.logger.error("Issue occured while processing the command")
 
         return status
 
@@ -286,7 +286,7 @@ class AppCommandLine:
         index = None if "index" not in command_args else command_args["index"]
         if command_target not in STATE_TARGET and index is None:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Missing required information about \"index\"")
+            self.logger.error("Missing required information about \"index\"")
             return False
 
         status = True
@@ -365,11 +365,11 @@ class AppCommandLine:
 
         else:
             self.logger.info("Stopped command processing")
-            self.logger.error("ERROR: Unsupported command target")
+            self.logger.error("Unsupported command target")
             return False
 
         if not status:
-            self.logger.error("ERROR: Issue occured while processing the command")
+            self.logger.error("Issue occured while processing the command")
 
         return status
 
