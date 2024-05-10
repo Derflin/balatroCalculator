@@ -2,15 +2,8 @@ from config import INDENT
 from game.static import CARD_SEALS
 
 class CardSeal:
-    def __init__(self, id):
-        base_seal = CARD_SEALS[id]
-
-        self.id = base_seal["id"]
-        self.name = base_seal["name"]
-
-        self.effect_active = base_seal["effect_active"] if "effect_active" in base_seal else {}
-        self.effect_passive = base_seal["effect_passive"] if "effect_passive" in base_seal else {}
-        self.condition = base_seal["condition"] if "condition" in base_seal else {}
+    def __init__(self, id = 0):
+        self.setBase(id)
 
     def __str__(self):
         if self.name == None:
@@ -23,6 +16,19 @@ class CardSeal:
             result_text = F"Seal: {self.name}"
         
         return result_text
+    
+    def setBase(self, id):
+        base_seal = CARD_SEALS[id]
+
+        self.id = base_seal["id"]
+        self.name = base_seal["name"]
+
+        self.effect_active = base_seal["effect_active"] if "effect_active" in base_seal else {}
+        self.effect_passive = base_seal["effect_passive"] if "effect_passive" in base_seal else {}
+        self.condition = base_seal["condition"] if "condition" in base_seal else {}
+
+    def getId(self):
+        return self.id
 
     def getEffectsActive(self):
         return self.effect_active
@@ -67,3 +73,14 @@ class CardSeal:
             score_modifier["add_trig"] = card_add_trig
 
         return score_modifier, self.condition
+    
+    def toDict(self):
+        export_dict = {
+            "id": self.getId()
+        }
+        return export_dict
+
+    def fromDict(self, export_dict):
+        self.__init__(
+            id = export_dict["id"]
+        )

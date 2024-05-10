@@ -5,24 +5,17 @@ from game.objects.cardEnhancment import CardEnhancment
 from game.objects.cardSeal import CardSeal
 
 class PlayingCard:
-    def __init__(self, id, suit_id = 0, enhancment_id = 0, edition_id = 0, seal_id = 0, additional_chip = 0):
-        base_card = CARD_RANK[id]
-
-        self.id = base_card["id"]
-        self.name = base_card["name"]
-
-        self.rank = base_card["rank"]
+    def __init__(self, id = 0, suit_id = 0, enhancment_id = 0, edition_id = 0, seal_id = 0, additional_chip = 0, active = True):
+        self.setBase(id)
         self.setSuit(suit_id)
 
         self.setEdition(edition_id)
         self.setEnhancment(enhancment_id)
         self.setSeal(seal_id)
 
-        self.effect_active = base_card["effect_active"] if "effect_active" in base_card else {}
-        self.effect_active["a_add_chip"] = additional_chip
-        self.condition = base_card["condition"] if "condition" in base_card else {}
+        self.setAdditionalChip(additional_chip)
 
-        self.active = True
+        self.setActive(active)
 
     def __str__(self):
         pattern = '\n'.join((
@@ -41,9 +34,20 @@ class PlayingCard:
                 result_text += F"\n{INDENT}-> {text}"
 
         return result_text
+    
+    def setBase(self, id):
+        base_card = CARD_RANK[id]
 
-    def getId(self):
-        return self.id if not self.getStonedStatus() else STONE_CARD_ID
+        self.id = base_card["id"]
+        self.name = base_card["name"]
+
+        self.rank = base_card["rank"]
+
+        self.effect_active = base_card["effect_active"] if "effect_active" in base_card else {}
+        self.condition = base_card["condition"] if "condition" in base_card else {}
+
+    def getId(self, exclude_stone=False):
+        return self.id if exclude_stone or not self.getStonedStatus() else STONE_CARD_ID
 
     def getRank(self):
         return self.rank if not self.getStonedStatus() else STONE_CARD_RANK
@@ -94,6 +98,9 @@ class PlayingCard:
         else:
             return None
     
+    def getAdditionalChip(self):
+        return self.effect_active["a_add_chip"] if "a_add_chip" in self.effect_active else 0
+
     def setAdditionalChip(self, value):
         self.effect_active["a_add_chip"] = value
 
@@ -150,3 +157,26 @@ class PlayingCard:
             return self.seal.getBaseScoreModifier()
         else:
             return {}, None
+        
+    def toDict(self):
+        export_dict = {
+            "id": self.getId(exclude_stone=True),
+            "suit_id": self.getSuit(),
+            "enhancment": self.getEnhancment().toDict(),
+            "edition": self.getEdition().toDict(),
+            "seal": self.getSeal().toDict(),
+            "additional_chip": self.getAdditionalChip(),
+            "active": self.getActive()
+        }
+        return export_dict
+
+    def fromDict(self, export_dict):
+        self.__init__(
+            id = export_dict["id"],
+            suit_id = export_dict["suit_id"],
+            additional_chip = export_dict["additional_chip"],
+            active = export_dict["active"]
+        )
+        self.getEnhancment().fromDict(export_dict["enhancment"])
+        self.getEdition().fromDict(export_dict["edition"])
+        self.getSeal().fromDict(export_dict["seal"])

@@ -1,9 +1,10 @@
-import logging
 import sys
+import logging
 
 from config import COMMANDS, TARGETS, STATE_TARGET, POKER_HAND_TARGET, JOKER_TARGET, PLAYING_CARD_TARGET, SEPARATOR, INDENT
 from game.logger import AppFormatter
 from game.simulation import Simulation
+from utility.file import JsonFile
 
 class AppCommandLine:
     def __init__(self):
@@ -40,6 +41,13 @@ class AppCommandLine:
         stdout_handler.setFormatter(AppFormatter('%(message)s'))
         game_logger.addHandler(stdout_handler)
 
+        # Set logger for utility objects
+        utility_logger = logging.getLogger("utility")
+        utility_logger.setLevel(logging.INFO)
+        stdout_handler = logging.StreamHandler(sys.stdout)
+        stdout_handler.setFormatter(AppFormatter('%(message)s'))
+        utility_logger.addHandler(stdout_handler)
+
     def start(self):
         self.logger.info("Welcome to calculator for Balatro")
         self.logger.info(F'Please type {self.help_command_string} to check possible commands')
@@ -61,7 +69,7 @@ class AppCommandLine:
                 for elem in command_inputs:
                     args = elem.lstrip("-").split("=")
                     arg_name = args[0]
-                    arg_value = int(args[1])
+                    arg_value = int(args[1]) if args[1].isnumeric() else args[1]
                     if "index" in arg_name:
                         arg_value -= 1
                     command_args[arg_name] = arg_value
@@ -87,59 +95,6 @@ class AppCommandLine:
             self.logger.info(F'Please type {self.help_command_string} to check possible commands')
 
         return status and found
-
-    def commandHelp(self, command_target=None, command_args=None):
-        if command_target is not None:
-            found = False
-            for command_details in COMMANDS.values():
-                if command_target in command_details["command_name"]:
-                    found = True
-
-                    self.logger.info(F'-> Desc: {command_details["desc"]}')
-                    
-                    required = "[REQUIRED]" if None not in command_details["command_target"] else "[OPTIONAL]"
-                    self.logger.info(F'-> {required} Command Targets: {"Not Supported" if len(command_details["command_target"]) == 0 else ""}')
-                    for target_name in command_details["command_target"]:
-                        if target_name is not None:
-                            command_target_name = target_name if target_name is not None else "None" 
-                            self.logger.info(INDENT + F'-- {command_target_name}')
-                    
-                    self.logger.info(F'-> Command Args: {"Not Supported" if len(command_details["command_args"]) == 0 else ""}')
-                    for arg in command_details["command_args"]:
-                        target = ("[" + arg["target"] + "]") if arg["target"] is not None else "[All]"
-                        required = "[REQUIRED]" if arg["required"] else "[OPTIONAL]"
-                        command_arg_name = "\"" + arg["name"] + "\""
-                        self.logger.info(INDENT + F'-- {target}{required} {command_arg_name} -> {arg["desc"]}')
-
-                    break
-
-            if not found:
-                self.logger.info(F"Couldn't find a command called \"{command_target}\"")
-                self.logger.info(F'Please type {self.help_command_string} to check possible commands')
-
-        else:
-            self.logger.info("This app is meant to be used as a score calculator for game \"Balatro\"")
-            self.logger.info("-----")
-            self.logger.info("Command structure: [command_name] [command_target] [command_args]")
-
-            self.logger.info("-> \"[command_name]\" is used to determine which command should be executed and can be one of the following:")
-            for command_details in COMMANDS.values():
-                command_name = " or ".join(["\"" + name + "\"" for name in command_details["command_name"]])
-                self.logger.info(INDENT + F'-- {command_name} -> {command_details["desc"]}')
-            
-            self.logger.info("-> \"[command_target]\" is used to specify what game objects exactly should be affected by the command and these might be one of the following:")
-            for target_details in TARGETS.values():
-                command_target = " or ".join(["\"" + name + "\"" for name in target_details["command_target"]])
-                self.logger.info(INDENT + F'-- {command_target} -> {target_details["name"]}')
-            
-            self.logger.info("-> \"[command_args]\" is used to specify additional parameters that can be passed along with the command")
-            self.logger.info(INDENT + "-- Syntax for the additional command arguments is: \"-[arg_name]=[arg_value]\"")
-            self.logger.info(INDENT + "-- If there is more than one additional argument passed, every additional argument should be seperated from previous one by blank space")
-            
-            self.logger.info("-----")
-            self.logger.info("You can also type \"help [command_name]\" in order to learn more about specific command and what [command_target] and [command_args] it supports")
-        
-        return True
 
     def commandShow(self, command_target=None, command_args=None):
         if command_target is None:
@@ -207,7 +162,7 @@ class AppCommandLine:
 
         elif command_target is None or command_target in PLAYING_CARD_TARGET:
             suit_id = None if "suit_id" not in command_args else command_args["suit_id"]
-            enhancment_id = None if "enhancment_id" not in command_args else command_args["enhacment_id"]
+            enhancment_id = None if "enhancment_id" not in command_args else command_args["enhancment_id"]
             edition_id = None if "edition_id" not in command_args else command_args["edition_id"]
             seal_id = None if "seal_id" not in command_args else command_args["seal_id"]
             add_chip = None if "add_chip" not in command_args else command_args["add_chip"]
@@ -406,13 +361,96 @@ class AppCommandLine:
         return status
 
     def commandSave(self, command_target=None, command_args=None):
-        #TODO
-        self.logger.info("-> Save: Not Implemented Yet")
+        filename = None if "file" not in command_args else command_args["file"]
+
+        self.logger.info("Trying to save data to file...")
+
+        file_manager = JsonFile(filename)
+        game_state_export = self.sim.toDict()
+        saved_filename = file_manager.writeJson(game_state_export)
+
+        if saved_filename is not None:
+            self.logger.info(F"Finished saving game state")
+        else:
+            self.logger.info("Stopped command processing")
+            self.logger.error("Issue occured while trying to save the game state")
+            return False
+
         return True
 
     def commandLoad(self, command_taget=None, command_args=None):
-        #TODO
-        self.logger.info("-> Load: Not Implemented Yet")
+        filename = None if "file" not in command_args else command_args["file"]
+        if filename is None:
+            self.logger.info("Stopped command processing")
+            self.logger.error("Missing required information about \"file\"")
+            return False
+        
+        self.logger.info("Trying to load data from file...")
+
+        file_manager = JsonFile(filename)
+        game_state_export = file_manager.readJson()
+        
+        if game_state_export is not None:
+            self.sim.fromDict(game_state_export)
+            self.logger.info("Finished loading game state")
+        else:
+            self.logger.info("Stopped command processing")
+            self.logger.error("Issue occured while trying to load the game state")
+            return False
+
+        return True
+
+    def commandHelp(self, command_target=None, command_args=None):
+        if command_target is not None:
+            found = False
+            for command_details in COMMANDS.values():
+                if command_target in command_details["command_name"]:
+                    found = True
+
+                    self.logger.info(F'-> Desc: {command_details["desc"]}')
+                    
+                    required = "[REQUIRED]" if None not in command_details["command_target"] else "[OPTIONAL]"
+                    self.logger.info(F'-> {required} Command Targets: {"Not Supported" if len(command_details["command_target"]) == 0 else ""}')
+                    for target_name in command_details["command_target"]:
+                        if target_name is not None:
+                            command_target_name = target_name if target_name is not None else "None" 
+                            self.logger.info(INDENT + F'-- {command_target_name}')
+                    
+                    self.logger.info(F'-> Command Args: {"Not Supported" if len(command_details["command_args"]) == 0 else ""}')
+                    for arg in command_details["command_args"]:
+                        target = ("[" + arg["target"] + "]") if arg["target"] is not None else "[All]"
+                        required = "[REQUIRED]" if arg["required"] else "[OPTIONAL]"
+                        command_arg_name = "\"" + arg["name"] + "\""
+                        self.logger.info(INDENT + F'-- {target}{required} {command_arg_name} -> {arg["desc"]}')
+
+                    break
+
+            if not found:
+                self.logger.info(F"Couldn't find a command called \"{command_target}\"")
+                self.logger.info(F'Please type {self.help_command_string} to check possible commands')
+
+        else:
+            self.logger.info("This app is meant to be used as a score calculator for game \"Balatro\"")
+            self.logger.info("-----")
+            self.logger.info("Command structure: [command_name] [command_target] [command_args]")
+
+            self.logger.info("-> \"[command_name]\" is used to determine which command should be executed and can be one of the following:")
+            for command_details in COMMANDS.values():
+                command_name = " or ".join(["\"" + name + "\"" for name in command_details["command_name"]])
+                self.logger.info(INDENT + F'-- {command_name} -> {command_details["desc"]}')
+            
+            self.logger.info("-> \"[command_target]\" is used to specify what game objects exactly should be affected by the command and these might be one of the following:")
+            for target_details in TARGETS.values():
+                command_target = " or ".join(["\"" + name + "\"" for name in target_details["command_target"]])
+                self.logger.info(INDENT + F'-- {command_target} -> {target_details["name"]}')
+            
+            self.logger.info("-> \"[command_args]\" is used to specify additional parameters that can be passed along with the command")
+            self.logger.info(INDENT + "-- Syntax for the additional command arguments is: \"-[arg_name]=[arg_value]\"")
+            self.logger.info(INDENT + "-- If there is more than one additional argument passed, every additional argument should be seperated from previous one by blank space")
+            
+            self.logger.info("-----")
+            self.logger.info("You can also type \"help [command_name]\" in order to learn more about specific command and what [command_target] and [command_args] it supports")
+        
         return True
     
     def commandQuit(self, command_target=None, command_args=None):

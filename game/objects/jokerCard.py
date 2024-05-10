@@ -5,32 +5,16 @@ from game.static import JOKERS, JOKER_RARITY, DEFAULT_DECK_SIZE, CARD_RANK_STID
 from game.objects.cardEdition import CardEdition
 
 class JokerCard:
-    def __init__(self, id, edition_id = 0, level = 0, additional_sell_value = 0):
-        base_joker = JOKERS[id]
-        self.id = base_joker["id"]
-        self.name = base_joker["name"]
-        self.rarity_id = base_joker["rarity"]
+    def __init__(self, id = 0, edition_id = 0, level = 0, additional_sell_value = 0, active = True):
+        self.setBase(id)
         
         self.setEdition(edition_id)
 
-        self.affect_scoring = base_joker["affect_scoring"] if "affect_scoring" in base_joker else True
-        self.copy_compat = base_joker["copy_compat"]
-
-        self.scoring_order = base_joker["scoring_order"]
-        
-        self.effect_active = base_joker["effect_active"] if "effect_active" in base_joker else {}
-        self.effect_passive = base_joker["effect_passive"] if "effect_passive" in base_joker else {}
-        self.condition = base_joker["condition"] if "condition" in base_joker else {}
-        self.condition_variety = base_joker["condition_variety"] if "condition_variety" in base_joker else {}
-        
-        self.upgrade = base_joker["upgrade"] if "upgrade" in base_joker else None
-        self.level = 0
-        self.setLevel(level)
+        self.setLevel(level, init_value=1)
     
-        self.b_cost = base_joker["cost"]
-        self.a_sell_value = additional_sell_value
+        self.setAdditionalSellValue(additional_sell_value)
 
-        self.active = True
+        self.setActive(active)
 
     def __str__(self):
         pattern = '\n'.join((
@@ -56,6 +40,26 @@ class JokerCard:
                 result_text += F"\n{INDENT}-> {text}"
 
         return result_text
+    
+    def setBase(self, id):
+        base_joker = JOKERS[id]
+        self.id = base_joker["id"]
+        self.name = base_joker["name"]
+        self.rarity_id = base_joker["rarity"]
+
+        self.affect_scoring = base_joker["affect_scoring"] if "affect_scoring" in base_joker else True
+        self.copy_compat = base_joker["copy_compat"]
+
+        self.scoring_order = base_joker["scoring_order"]
+        
+        self.effect_active = base_joker["effect_active"] if "effect_active" in base_joker else {}
+        self.effect_passive = base_joker["effect_passive"] if "effect_passive" in base_joker else {}
+        self.condition = base_joker["condition"] if "condition" in base_joker else {}
+        self.condition_variety = base_joker["condition_variety"] if "condition_variety" in base_joker else {}
+        
+        self.upgrade = base_joker["upgrade"] if "upgrade" in base_joker else None
+
+        self.b_cost = base_joker["cost"]
 
     def getId(self):
         return self.id
@@ -184,7 +188,10 @@ class JokerCard:
     def getLevel(self):
         return self.level
 
-    def setLevel(self, value):
+    def setLevel(self, value, init_value=None):
+        if init_value is not None:
+            self.level = init_value
+
         if value != self.level:
             if self.upgrade is not None:
                 level_offset = value - self.level
@@ -254,3 +261,22 @@ class JokerCard:
             return self.edition.getBaseScoreModifier()
         else:
             return {}, None
+        
+    def toDict(self):
+        export_dict = {
+            "id": self.getId(),
+            "edition": self.getEdition().toDict(),
+            "level": self.getLevel(),
+            "additional_sell_value": self.getAdditionalSellValue(),
+            "active": self.getActive()
+        }
+        return export_dict
+
+    def fromDict(self, export_dict):
+        self.__init__(
+            id = export_dict["id"],
+            level = export_dict["level"],
+            additional_sell_value = export_dict["additional_sell_value"],
+            active = export_dict["active"]
+        )
+        self.getEdition().fromDict(export_dict["edition"])

@@ -1,3 +1,5 @@
+DEFAULT_SAVE_DIRECTORY = "saves/"
+
 INDENT_SIZE = 4
 INDENT = " " * INDENT_SIZE
 SEPARATOR_SIZE = 40
@@ -329,16 +331,30 @@ COMMANDS = {
         ]
     },
     "save": {
-        "desc": "TODO: Not Implemented Yet",
+        "desc": "Save game state to file",
         "command_name": ["save"],
         "command_target": [None],
-        "command_args": []
+        "command_args": [
+            {
+                "name": "file",
+                "desc": F"Name of file to be created in \"{DEFAULT_SAVE_DIRECTORY}\" directory, to which the game state will be saved",
+                "required": False,
+                "target": None
+            }
+        ]
     },
     "load": {
-        "desc": "TODO: Not Implemented Yet",
+        "desc": "Load game state from file",
         "command_name": ["load"],
         "command_target": [None],
-        "command_args": []
+        "command_args": [
+            {
+                "name": "file",
+                "desc": F"Name of file located in \"{DEFAULT_SAVE_DIRECTORY}\" directory, from which the game state will be loaded",
+                "required": True,
+                "target": None
+            }
+        ]
     },
     "help": {
         "desc": "Display app manual",

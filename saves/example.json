@@ -1,0 +1,154 @@
+{
+    "state": {
+        "skipped_blinds": 0,
+        "dollar_count": 0,
+        "joker_count": 3,
+        "joker_count_max": 5,
+        "card_deck_size": 52,
+        "stone_card_deck_count": 0,
+        "steel_card_deck_count": 0,
+        "discard_remain": 0,
+        "card_deck_remain": 52
+    },
+    "poker_hands": [
+        {
+            "card": {
+                "id": 0,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 1,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 2,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 3,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 4,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 5,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 6,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 7,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 8,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 9,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 10,
+                "level": 1,
+                "played_count": 0
+            }
+        },
+        {
+            "card": {
+                "id": 11,
+                "level": 1,
+                "played_count": 0
+            }
+        }
+    ],
+    "playing_cards": [
+        {
+            "card": {
+                "id": 7,
+                "suit_id": 0,
+                "enhancment": {
+                    "id": 2
+                },
+                "edition": {
+                    "id": 2
+                },
+                "seal": {
+                    "id": 2
+                },
+                "additional_chip": 0,
+                "active": true
+            },
+            "selected": false
+        }
+    ],
+    "jokers": [
+        {
+            "card": {
+                "id": 5,
+                "edition": {
+                    "id": 3
+                },
+                "level": 0,
+                "additional_sell_value": 0,
+                "active": true
+            }
+        },
+        {
+            "card": {
+                "id": 3,
+                "edition": {
+                    "id": 1
+                },
+                "level": 0,
+                "additional_sell_value": 0,
+                "active": true
+            }
+        },
+        {
+            "card": {
+                "id": 0,
+                "edition": {
+                    "id": 0
+                },
+                "level": 0,
+                "additional_sell_value": 0,
+                "active": true
+            }
+        }
+    ]
+}

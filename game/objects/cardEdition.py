@@ -2,17 +2,8 @@ from config import INDENT
 from game.static import CARD_EDITIONS
 
 class CardEdition:
-    def __init__(self, id):
-        base_edition = CARD_EDITIONS[id]
-
-        self.id = base_edition["id"]
-        self.name = base_edition["name"]
-
-        self.effect_active = base_edition["effect_active"] if "effect_active" in base_edition else {}
-        self.effect_passive = base_edition["effect_passive"] if "effect_passive" in base_edition else {}
-        self.condition = base_edition["condition"] if "condition" in base_edition else {}
-        
-        self.b_cost = base_edition["cost"]
+    def __init__(self, id = 0):
+        self.setBase(id)
 
     def __str__(self):
         if self.name == None:
@@ -25,6 +16,21 @@ class CardEdition:
             result_text = F"Edition: {self.name}"
 
         return result_text
+
+    def setBase(self, id):
+        base_edition = CARD_EDITIONS[id]
+
+        self.id = base_edition["id"]
+        self.name = base_edition["name"]
+
+        self.effect_active = base_edition["effect_active"] if "effect_active" in base_edition else {}
+        self.effect_passive = base_edition["effect_passive"] if "effect_passive" in base_edition else {}
+        self.condition = base_edition["condition"] if "condition" in base_edition else {}
+        
+        self.b_cost = base_edition["cost"]
+
+    def getId(self):
+        return self.id
 
     def getEffectsActive(self):
         return self.effect_active
@@ -69,3 +75,14 @@ class CardEdition:
             score_modifier["add_trig"] = card_add_trig
 
         return score_modifier, self.condition
+    
+    def toDict(self):
+        export_dict = {
+            "id": self.getId()
+        }
+        return export_dict
+
+    def fromDict(self, export_dict):
+        self.__init__(
+            id = export_dict["id"]
+        )

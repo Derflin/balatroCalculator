@@ -49,25 +49,28 @@ class Simulation:
         else:
             return self.state
 
-    def setState(self, skipped_blinds = None, dollar_count = None, joker_count = None, joker_count_max = None, card_deck_size = None, stone_card_deck_count = None, steel_card_deck_count = None, discard_remain = None, card_deck_remain = None):
-        if skipped_blinds is not None:
-            self.state["skipped_blinds"] = skipped_blinds
-        if dollar_count is not None:
-            self.state["dollar_count"] = dollar_count
-        if joker_count is not None:
-            self.state["joker_count"] = joker_count
-        if joker_count_max is not None:
-            self.state["joker_count_max"] = joker_count_max
-        if card_deck_size is not None:
-            self.state["card_deck_size"] = card_deck_size
-        if stone_card_deck_count is not None:
-            self.state["stone_card_deck_count"] = stone_card_deck_count
-        if steel_card_deck_count is not None:
-            self.state["steel_card_deck_count"] = steel_card_deck_count
-        if discard_remain is not None:
-            self.state["discard_remain"] = discard_remain
-        if card_deck_remain is not None:
-            self.state["card_deck_remain"] = card_deck_remain
+    def setState(self, state = None, skipped_blinds = None, dollar_count = None, joker_count = None, joker_count_max = None, card_deck_size = None, stone_card_deck_count = None, steel_card_deck_count = None, discard_remain = None, card_deck_remain = None):
+        if state is not None:
+            self.state = state
+        else:
+            if skipped_blinds is not None:
+                self.state["skipped_blinds"] = skipped_blinds
+            if dollar_count is not None:
+                self.state["dollar_count"] = dollar_count
+            if joker_count is not None:
+                self.state["joker_count"] = joker_count
+            if joker_count_max is not None:
+                self.state["joker_count_max"] = joker_count_max
+            if card_deck_size is not None:
+                self.state["card_deck_size"] = card_deck_size
+            if stone_card_deck_count is not None:
+                self.state["stone_card_deck_count"] = stone_card_deck_count
+            if steel_card_deck_count is not None:
+                self.state["steel_card_deck_count"] = steel_card_deck_count
+            if discard_remain is not None:
+                self.state["discard_remain"] = discard_remain
+            if card_deck_remain is not None:
+                self.state["card_deck_remain"] = card_deck_remain
 
         return True
 
@@ -99,7 +102,7 @@ class Simulation:
             return True
         return False
 
-    def addPlayingCard(self, id, index = None, suit_id = 0, enhancment_id = 0, edition_id = 0, seal_id = 0, add_chip = 0):
+    def addPlayingCard(self, id = 0, index = None, suit_id = 0, enhancment_id = 0, edition_id = 0, seal_id = 0, add_chip = 0):
         suit_id = 0 if suit_id is None else suit_id
         enhancment_id = 0 if enhancment_id is None else enhancment_id
         edition_id = 0 if edition_id is None else edition_id
@@ -196,7 +199,7 @@ class Simulation:
             return True
         return False
 
-    def addJoker(self, id, index = None, edition_id = 0, level = 0, add_sell_value = 0):
+    def addJoker(self, id = 0, index = None, edition_id = 0, level = 0, add_sell_value = 0):
         edition_id = 0 if edition_id is None else edition_id
         level = 0 if level is None else level
         add_sell_value = 0 if add_sell_value is None else add_sell_value
@@ -1097,3 +1100,37 @@ class Simulation:
             self.logger.info(F"Calculated score:")
             self.logger.info(F"{INDENT}-> Min: {min_chip} Chip x {min_mult} Mult = {min_result} Points")
             self.logger.info(F"{INDENT}-> Max: {max_chip} Chip x {max_mult} Mult = {max_result} Points")
+
+    def toDict(self):
+        export_dict = {
+            "state": self.getState(),
+            "poker_hands": [{"card": elem.toDict()} for elem in self.poker_hands],
+            "playing_cards": [{"card": elem["card"].toDict(), "selected": elem["selected"]} for elem in self.hand["cards"]],
+            "jokers": [{"card": elem["card"].toDict()} for elem in self.jokers]
+        }
+        return export_dict
+
+    def fromDict(self, export_dict):
+        self.setState(state=export_dict["state"])
+
+        self.poker_hands = []
+        for elem in export_dict["poker_hands"]:
+            hand_type = PokerHand()
+            hand_type.fromDict(elem["card"])
+            self.poker_hands.append(hand_type)
+
+        self.hand = {"type_id": 0, "detected_types": [], "cards": [], "scoring_cards_indexes": []}
+        for index, elem in enumerate(export_dict["playing_cards"]):
+            self.addPlayingCard(index=index)
+            self.hand["cards"][index]["card"].fromDict(elem["card"])
+            if "selected" in elem and elem["selected"]:
+                self.triggerSelectPlayingCard(index)
+            self.hand
+
+        self.jokers = []
+        for index, elem in enumerate(export_dict["jokers"]):
+            self.addJoker(index=index)
+            self.jokers[index]["card"].fromDict(elem["card"])
+
+        self.updateJokerRules()
+        self.updateSelectedPokerHand()

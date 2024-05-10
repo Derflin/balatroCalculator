@@ -26,7 +26,6 @@ App itself contains a "help" feature which should explain all the details regard
 - [] Adjust displayed card_rank or card_suit in conditions, to include names apart from IDs
 - [] Refactor project - Breakdown long functions in files into smaller functions to improve code readability and remove reduntant/unnecesary functions
 - [] Add some usage examples to the README file 
-- [] Implement save/load feature - maybe by implementing _repr__ functon in objects 
 - [] Implement adding jokers/playing cards or changing editions/seals/enhancments/suits/rank based on their names, rather than ID from configuration file
 - [] Implement feature for optimizing joker/playing cards placement to maximize score 
 - [] Add option to load game state based on state in actual game

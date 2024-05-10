@@ -2,15 +2,8 @@ from config import INDENT
 from game.static import CARD_ENHANCMENTS
 
 class CardEnhancment:
-    def __init__(self, id):
-        base_enhancment = CARD_ENHANCMENTS[id]
-
-        self.id = base_enhancment["id"]
-        self.name = base_enhancment["name"]
-
-        self.effect_active = base_enhancment["effect_active"] if "effect_active" in base_enhancment else {}
-        self.effect_passive = base_enhancment["effect_passive"] if "effect_passive" in base_enhancment else {}
-        self.condition = base_enhancment["condition"] if "condition" in base_enhancment else {}
+    def __init__(self, id = 0):
+        self.setBase(id)
 
     def __str__(self):
         if self.name == None:
@@ -23,6 +16,19 @@ class CardEnhancment:
             result_text = F"Enhancment: {self.name}"
         
         return result_text
+    
+    def setBase(self, id):
+        base_enhancment = CARD_ENHANCMENTS[id]
+
+        self.id = base_enhancment["id"]
+        self.name = base_enhancment["name"]
+
+        self.effect_active = base_enhancment["effect_active"] if "effect_active" in base_enhancment else {}
+        self.effect_passive = base_enhancment["effect_passive"] if "effect_passive" in base_enhancment else {}
+        self.condition = base_enhancment["condition"] if "condition" in base_enhancment else {}
+
+    def getId(self):
+        return self.id
 
     def getEffectsActive(self):
         return self.effect_active
@@ -64,3 +70,14 @@ class CardEnhancment:
             score_modifier["add_trig"] = card_add_trig
 
         return score_modifier, self.condition
+    
+    def toDict(self):
+        export_dict = {
+            "id": self.getId()
+        }
+        return export_dict
+
+    def fromDict(self, export_dict):
+        self.__init__(
+            id = export_dict["id"]
+        )

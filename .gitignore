@@ -1,1 +1,3 @@
 __pycache__/
+saves/*.json
+!saves/example.json
