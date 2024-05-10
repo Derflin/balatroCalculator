@@ -45,7 +45,7 @@ class AppCommandLine:
         utility_logger = logging.getLogger("utility")
         utility_logger.setLevel(logging.INFO)
         stdout_handler = logging.StreamHandler(sys.stdout)
-        stdout_handler.setFormatter(AppFormatter('%(message)s'))
+        stdout_handler.setFormatter(AppFormatter('%(message)s', msg_prefix="->"))
         utility_logger.addHandler(stdout_handler)
 
     def start(self):

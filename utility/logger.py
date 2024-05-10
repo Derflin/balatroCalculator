@@ -6,8 +6,9 @@ class AppFormatter(logging.Formatter):
     err_prefix_fmt = "ERROR: "
     warn_prefix_fmt = "WARNING: "
 
-    def __init__(self, fmt):
+    def __init__(self, fmt, msg_prefix=""):
         logging.Formatter.__init__(self, fmt)
+        self.msg_prefix = msg_prefix + " " if msg_prefix != "" else msg_prefix
 
     def format(self, record):
         # Prepare indent for the message based on context level
@@ -20,6 +21,9 @@ class AppFormatter(logging.Formatter):
             self._style._fmt = self.err_prefix_fmt + fmt_orig
         elif record.levelno == logging.WARNING:
             self._style._fmt = self.warn_prefix_fmt + fmt_orig
+
+        # Add message prefix
+        self._style._fmt = self.msg_prefix + self._style._fmt
 
         # Call the original formatter class
         msg = logging.Formatter.format(self, record)
