@@ -2,9 +2,9 @@ import sys
 import logging
 
 from config import COMMANDS, TARGETS, STATE_TARGET, POKER_HAND_TARGET, JOKER_TARGET, PLAYING_CARD_TARGET, SEPARATOR, INDENT
-from game.logger import AppFormatter
 from game.simulation import Simulation
 from utility.file import JsonFile
+from utility.logger import AppFormatter
 
 class AppCommandLine:
     def __init__(self):
