@@ -367,7 +367,7 @@ class AppCommandLine:
 
         file_manager = JsonFile(filename)
         game_state_export = self.sim.toDict()
-        saved_filename = file_manager.writeJson(game_state_export)
+        saved_filename = file_manager.write(game_state_export)
 
         if saved_filename is not None:
             self.logger.info(F"Finished saving game state")
@@ -388,7 +388,7 @@ class AppCommandLine:
         self.logger.info("Trying to load data from file...")
 
         file_manager = JsonFile(filename)
-        game_state_export = file_manager.readJson()
+        game_state_export = file_manager.read()
         
         if game_state_export is not None:
             self.sim.fromDict(game_state_export)

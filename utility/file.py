@@ -18,7 +18,7 @@ class JsonFile:
         # Set logger for current object
         self.logger = logging.getLogger(__name__)
 
-    def readJson(self):
+    def read(self):
         parsed_data = None
         try:
             with open(DEFAULT_SAVE_DIRECTORY + self.filename, "r", encoding='utf-8') as file:
@@ -33,7 +33,7 @@ class JsonFile:
 
         return parsed_data
 
-    def writeJson(self, data):
+    def write(self, data):
         try:
             with open(DEFAULT_SAVE_DIRECTORY + self.filename, 'w', encoding='utf-8') as file:
                 json.dump(data, file, ensure_ascii=False, indent=4)
