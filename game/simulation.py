@@ -1,7 +1,7 @@
 import logging
 
 from config import INDENT
-from game.static import GAME_SCORING_ORDER, POKER_HANDS, FACE_CARD_IDS, STONE_CARD_ID, CARD_SUIT, STONE_CARD_SUIT, CARD_RANK, DEFAULT_DECK_SIZE, DEFAULT_JOKER_COUNT_MAX
+from game.static import GAME_SCORING_ORDER, POKER_HANDS, FACE_CARD_IDS, STONE_CARD_ID, STONE_CARD_SUIT, CARD_RANK, DEFAULT_DECK_SIZE, DEFAULT_JOKER_COUNT_MAX
 from game.objects.pokerHand import PokerHand
 from game.objects.playingCard import PlayingCard
 from game.objects.jokerCard import JokerCard
@@ -40,7 +40,7 @@ class Simulation:
         # Set logger for current object
         self.logger = logging.getLogger(__name__)
 
-    def getState(self, key = None):
+    def getState(self, key=None):
         if key is not None:
             if key in self.state:
                 return self.state[key]
@@ -49,7 +49,7 @@ class Simulation:
         else:
             return self.state
 
-    def setState(self, state = None, skipped_blinds = None, dollar_count = None, joker_count = None, joker_count_max = None, card_deck_size = None, stone_card_deck_count = None, steel_card_deck_count = None, discard_remain = None, card_deck_remain = None):
+    def setState(self, state=None, skipped_blinds=None, dollar_count=None, joker_count=None, joker_count_max=None, card_deck_size=None, stone_card_deck_count=None, steel_card_deck_count=None, discard_remain=None, card_deck_remain=None):
         if state is not None:
             self.state = state
         else:
@@ -79,7 +79,7 @@ class Simulation:
             return self.poker_hands[index].getLevel()
         return None
 
-    def addPokerHandLevel(self, index, value = 1):
+    def addPokerHandLevel(self, index, value=1):
         if index >= 0 and index < len(self.poker_hands):
             self.poker_hands[index].addLevel(value)
             return True
@@ -102,13 +102,7 @@ class Simulation:
             return True
         return False
 
-    def addPlayingCard(self, id = 0, index = None, suit_id = 0, enhancment_id = 0, edition_id = 0, seal_id = 0, add_chip = 0):
-        suit_id = 0 if suit_id is None else suit_id
-        enhancment_id = 0 if enhancment_id is None else enhancment_id
-        edition_id = 0 if edition_id is None else edition_id
-        seal_id = 0 if seal_id is None else seal_id
-        add_chip = 0 if add_chip is None else add_chip
-        
+    def addPlayingCard(self, id=None, index=None, suit_id=None, enhancment_id=None, edition_id=None, seal_id=None, add_chip=None):
         playing_card = {
             "selected": False,
             "card": PlayingCard(id, suit_id=suit_id, enhancment_id=enhancment_id, edition_id=edition_id, seal_id=seal_id, additional_chip=add_chip)
@@ -199,11 +193,7 @@ class Simulation:
             return True
         return False
 
-    def addJoker(self, id = 0, index = None, edition_id = 0, level = 0, add_sell_value = 0):
-        edition_id = 0 if edition_id is None else edition_id
-        level = 0 if level is None else level
-        add_sell_value = 0 if add_sell_value is None else add_sell_value
-        
+    def addJoker(self, id=None, index=None, edition_id=None, level=None, add_sell_value=None):
         joker = {
             "copied_index": None,    
             "card": JokerCard(id, edition_id=edition_id, level=level, additional_sell_value=add_sell_value)
@@ -253,7 +243,7 @@ class Simulation:
             return True
         return False
 
-    def addJokerLevel(self, index, value = 1):
+    def addJokerLevel(self, index, value=1):
         if index >= 0 and index < len(self.jokers):
             self.jokers[index]["card"].addLevel(value)
             return True
@@ -665,7 +655,7 @@ class Simulation:
         
         return result
 
-    def checkConditions(self, game_scoring_stage, condition, card_index = None, triggered_once=False):
+    def checkConditions(self, game_scoring_stage, condition, card_index=None, triggered_once=False):
         has_activate_probability = True if "activate_probability" in condition else False
 
         condition_passed = True
@@ -690,7 +680,6 @@ class Simulation:
 
                         if not card_wildcard:
                             if card_suit not in condition["card_suit"]:
-                                #NOTE: not sure if debuffed card ignores passive effects from jokers
                                 if "smeared_suits" in self.rules and "ignores_smeared_suits" not in condition and card_active:
                                     smeared_card_suit_id = card_suit - 1 if card_suit % 2 == 1 else card_suit + 1
                                     if smeared_card_suit_id not in condition["card_suit"]:

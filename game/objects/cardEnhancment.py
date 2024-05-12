@@ -2,7 +2,7 @@ from config import INDENT
 from game.static import CARD_ENHANCMENTS
 
 class CardEnhancment:
-    def __init__(self, id = 0):
+    def __init__(self, id=0):
         self.setBase(id)
 
     def __str__(self):
@@ -18,6 +18,9 @@ class CardEnhancment:
         return result_text
     
     def setBase(self, id):
+        base_id = id if id is not None else 0
+        base_id = base_id if base_id >= 0 and base_id < len(CARD_ENHANCMENTS) else 0
+
         base_enhancment = CARD_ENHANCMENTS[id]
 
         self.id = base_enhancment["id"]

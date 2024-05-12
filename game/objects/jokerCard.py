@@ -5,12 +5,12 @@ from game.static import JOKERS, JOKER_RARITY, DEFAULT_DECK_SIZE, CARD_RANK_STID
 from game.objects.cardEdition import CardEdition
 
 class JokerCard:
-    def __init__(self, id = 0, edition_id = 0, level = 0, additional_sell_value = 0, active = True):
+    def __init__(self, id=0, edition_id=0, level=0, additional_sell_value=0, active=True):
         self.setBase(id)
         
         self.setEdition(edition_id)
 
-        self.setLevel(level, init_value=1)
+        self.setLevel(level, init_value=0)
     
         self.setAdditionalSellValue(additional_sell_value)
 
@@ -42,7 +42,11 @@ class JokerCard:
         return result_text
     
     def setBase(self, id):
-        base_joker = JOKERS[id]
+        base_id = id if id is not None else 0
+        base_id = base_id if base_id >= 0 and base_id < len(JOKERS) else 0
+
+        base_joker = JOKERS[base_id]
+
         self.id = base_joker["id"]
         self.name = base_joker["name"]
         self.rarity_id = base_joker["rarity"]
@@ -191,6 +195,7 @@ class JokerCard:
     def setLevel(self, value, init_value=None):
         if init_value is not None:
             self.level = init_value
+        value = value if value is not None else self.level
 
         if value != self.level:
             if self.upgrade is not None:
@@ -202,7 +207,7 @@ class JokerCard:
             
             self.level = value
 
-    def addLevel(self, value = 1):
+    def addLevel(self, value=1):
         if self.upgrade is not None:
             level_offset = value
             
@@ -219,19 +224,19 @@ class JokerCard:
         return self.a_sell_value
 
     def setAdditionalSellValue(self, value):
-        self.a_sell_value = value
+        self.a_sell_value = value if value is not None else 0
 
     def addAdditionalSellValue(self, value):
-        self.a_sell_value += value
+        self.a_sell_value += value if value is not None else 0
 
     def getActive(self):
         return self.active
     
     def setActive(self, value):
-        self.active = bool(value)
+        self.active = bool(value) if value is not None else True
 
     #NOTE: Based on: https://www.reddit.com/r/balatro/comments/1b6lito/base_sell_value_calculation/
-    def getSellValue(self, discount_rate = 0.0, game_inflation = 0):
+    def getSellValue(self, discount_rate=0.0, game_inflation=0):
         cost = (self.getBaseCost() + game_inflation + self.edition.getBaseCost()) * (1.0 - discount_rate)
         sell_value = max(1, math.floor(cost / 2.0)) + self.getAdditionalSellValue()
 

@@ -5,7 +5,7 @@ from game.objects.cardEnhancment import CardEnhancment
 from game.objects.cardSeal import CardSeal
 
 class PlayingCard:
-    def __init__(self, id = 0, suit_id = 0, enhancment_id = 0, edition_id = 0, seal_id = 0, additional_chip = 0, active = True):
+    def __init__(self, id=0, suit_id=0, enhancment_id=0, edition_id=0, seal_id=0, additional_chip=0, active=True):
         self.setBase(id)
         self.setSuit(suit_id)
 
@@ -36,7 +36,10 @@ class PlayingCard:
         return result_text
     
     def setBase(self, id):
-        base_card = CARD_RANK[id]
+        base_id = id if id is not None else 0
+        base_id = base_id if base_id >= 0 and base_id < len(CARD_RANK) else 0
+
+        base_card = CARD_RANK[base_id]
 
         self.id = base_card["id"]
         self.name = base_card["name"]
@@ -102,16 +105,19 @@ class PlayingCard:
         return self.effect_active["a_add_chip"] if "a_add_chip" in self.effect_active else 0
 
     def setAdditionalChip(self, value):
-        self.effect_active["a_add_chip"] = value
+        self.effect_active["a_add_chip"] = value if value is not None else 0
 
     def addAdditionalChip(self, value):
-        self.effect_active["a_add_chip"] += value
+        if "a_add_chip" not in self.effect_active:
+            self.setAdditionalChip(value)
+            
+        self.effect_active["a_add_chip"] += value if value is not None else 0
 
     def getActive(self):
         return self.active
     
     def setActive(self, value):
-        self.active = bool(value)
+        self.active = bool(value) if value is not None else True
 
     def getWildcardStatus(self):
         enhancment_passive_effect = self.enhancment.getEffectsPassive()

@@ -2,7 +2,7 @@ from config import INDENT
 from game.static import POKER_HANDS
 
 class PokerHand:
-    def __init__(self, id = 0, level = 1, played_count = 0):
+    def __init__(self, id=0, level=1, played_count=0):
         self.setBase(id)
 
         self.setLevel(level, init_value=1)
@@ -21,6 +21,9 @@ class PokerHand:
         return pattern.format(self.name, self.level, base_score_modifier[0], base_score_modifier[1], upgrade_score_modifier[0], upgrade_score_modifier[1])
 
     def setBase(self, id):
+        base_id = id if id is not None else 0
+        base_id = base_id if base_id >= 0 and base_id < len(POKER_HANDS) else 0
+
         base_hand = POKER_HANDS[id]
 
         self.id = base_hand["id"]
@@ -49,6 +52,7 @@ class PokerHand:
     def setLevel(self, value, init_value=None):
         if init_value is not None:
             self.level = init_value
+        value = value if value is not None else self.level
 
         if value != self.level:
             if self.upgrade is not None:
@@ -60,7 +64,7 @@ class PokerHand:
             
             self.level = value
 
-    def addLevel(self, value = 1):
+    def addLevel(self, value=1):
         if self.upgrade is not None:
             level_offset = value
             
@@ -77,9 +81,9 @@ class PokerHand:
         return self.played_count
     
     def setPlayedCount(self, value):
-        self.played_count = value
+        self.played_count = value if value is not None else 0
 
-    def addPlayedCount(self, value = 1):
+    def addPlayedCount(self, value=1):
         self.played_count += value
 
     def getBaseScoreModifier(self):
