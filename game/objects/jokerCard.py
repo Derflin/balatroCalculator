@@ -121,6 +121,9 @@ class JokerCard:
                         if dollar_count is not None:
                             value = dollar_count // 5
                             return value if value >= 0 else 0
+                    case "other_jokers_sell_value":
+                        sell_value = simulation.getOtherJokerSellValue()
+                        return sell_value if sell_value >= 0 else 0
                     case "left_jokers_sell_value":
                         sell_value = simulation.getJokerSellValueFromLeft()
                         return sell_value if sell_value >= 0 else 0

@@ -261,6 +261,15 @@ class Simulation:
             return True
         return False
 
+    def getOtherJokerSellValue(self, joker_exclude_index=None):
+        sell_value = 0
+        exclude_index = joker_exclude_index if joker_exclude_index is not None else self.cur_joker_index
+        for joker_index in range(len(self.jokers)):
+            if joker_index == exclude_index:
+                continue
+            sell_value += self.jokers[joker_index]["card"].getSellValue()
+        return sell_value
+
     def getJokerSellValueFromLeft(self, joker_stop_index=None):
         sell_value = 0
         stop_index = joker_stop_index if joker_stop_index is not None else self.cur_joker_index
