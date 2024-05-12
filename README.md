@@ -23,9 +23,11 @@ App itself contains a "help" feature which should explain all the details regard
 ## TODO
 
 - [] Update static data to be compatible with 1.0.1f update 
-- [] Adjust displayed card_rank or card_suit in conditions, to include names apart from IDs
-- [] Refactor project - Breakdown long functions in files into smaller functions to improve code readability and remove reduntant/unnecesary functions
+- [] Update README
+- [] Set MIT license
 - [] Add some usage examples to the README file 
+
+- [] Adjust displayed card_rank or card_suit in conditions, to include names apart from IDs (maybe add some kind of tags to message sent to logger and then detect them in logger and replace "object_tag{ID}object_tag" with something like "object_type_name (ID: {id})")
 - [] Implement adding jokers/playing cards or changing editions/seals/enhancments/suits/rank based on their names, rather than ID from configuration file
 - [] Implement feature for optimizing joker/playing cards placement to maximize score 
 - [] Add option to load game state based on state in actual game
