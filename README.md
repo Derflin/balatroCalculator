@@ -22,7 +22,6 @@ App itself contains a "help" feature which should explain all the details regard
 
 ## TODO
 
-- [] Update static data to be compatible with 1.0.1f update 
 - [] Update README
 - [] Set MIT license
 - [] Add some usage examples to the README file 
