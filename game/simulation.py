@@ -491,7 +491,9 @@ class Simulation:
                             # Add id loop for aces
                             for card_index in range(len(id_list)):
                                 if id_list[card_index][0] == len(CARD_RANK) - 1:
-                                    id_list.append(id_list[card_index])
+                                    loop_card = id_list[card_index]
+                                    loop_card[1] = -1
+                                    id_list.append(loop_card)
                                 else:
                                     break
 
