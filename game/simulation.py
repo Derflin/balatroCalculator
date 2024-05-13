@@ -391,220 +391,23 @@ class Simulation:
                     poker_hand_short_code = self.poker_hands[cur_index].getShortCode()
 
                     detected, last_indexes = False, []
-                    repeat_count, last_value = 0, None
                     match poker_hand_short_code:
                         case "high_card":
-                            id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
-                            
-                            for card_index in range(len(id_list)):
-                                # Detect stone card
-                                if id_list[card_index][1] == STONE_CARD_ID:
-                                    detected_indexes.append(id_list[card_index][0])
-                                    continue
-                                
-                                # Detect poker hand
-                                if not detected:
-                                    last_indexes.append(id_list[card_index][0])
-                                    detected = True
-
-                            # High card is the base poker hand, so it will always be set as detected
-                            detected = True
-
+                            detected, detected_indexes, last_indexes = self.detectPokerHandHighCard(selected_cards, detected_indexes, last_indexes)
                         case "pair":
-                            required_size = 2
-                            id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
-                            
-                            for card_index in range(len(id_list)):
-                                # Detect stone card
-                                if id_list[card_index][1] == STONE_CARD_ID:
-                                    detected_indexes.append(id_list[card_index][0])
-                                    continue
-
-                                # Detect poker hand
-                                if not detected:
-                                    if last_value is None or last_value != id_list[card_index][1]:
-                                        last_value = id_list[card_index][1]
-                                        last_indexes = [id_list[card_index][0]]
-                                        repeat_count = 1
-                                    else:
-                                        last_indexes.append(id_list[card_index][0])
-                                        repeat_count += 1
-
-                                    if repeat_count >= required_size:
-                                        detected = True
-
+                            detected, detected_indexes, last_indexes = self.detectPokerHandManyOfKind(selected_cards, detected_indexes, last_indexes, kind_count=2)
                         case "two_pair":
-                            required_size = 2
-                            id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
-                            detected_count = 0
-                            
-                            for card_index in range(len(id_list)):
-                                # Detect stone card
-                                if id_list[card_index][1] == STONE_CARD_ID:
-                                    detected_indexes.append(id_list[card_index][0])
-                                    continue
-
-                                # Detect poker hand
-                                if not detected:
-                                    if last_value is None or last_value != id_list[card_index][1]:
-                                        last_value = id_list[card_index][1]
-                                        repeat_count = 1
-                                    else:
-                                        repeat_count += 1
-                                        if repeat_count == 2:
-                                            detected_count += 1
-                                            last_indexes.append(id_list[card_index-1][0])
-                                            last_indexes.append(id_list[card_index][0])
-
-                                    if detected_count >= required_size:
-                                        detected = True
-
+                            detected, detected_indexes, last_indexes = self.detectPokerHandTwoPair(selected_cards, detected_indexes, last_indexes)
                         case "three_of_kind":
-                            required_size = 3
-                            id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
-                            
-                            for card_index in range(len(id_list)):
-                                # Detect stone card
-                                if id_list[card_index][1] == STONE_CARD_ID:
-                                    detected_indexes.append(id_list[card_index][0])
-                                    continue
-
-                                # Detect poker hand
-                                if not detected:
-                                    if last_value is None or last_value != id_list[card_index][1]:
-                                        last_value = id_list[card_index][1]
-                                        last_indexes = [id_list[card_index][0]]
-                                        repeat_count = 1
-                                    else:
-                                        last_indexes.append(id_list[card_index][0])
-                                        repeat_count += 1
-
-                                    if repeat_count >= required_size:
-                                        detected = True
-
+                            detected, detected_indexes, last_indexes = self.detectPokerHandManyOfKind(selected_cards, detected_indexes, last_indexes, kind_count=3)
                         case "straight":
-                            required_size = 4 if "four_flush_straight" in self.rules else 5
-                            max_size = 5
-                            id_offset = 1 if "straight_gap" in self.rules else 0
-                            id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
-                            
-                            # Add id loop for aces
-                            for card_index in range(len(id_list)):
-                                if id_list[card_index][1] == len(CARD_RANK) - 1:
-                                    loop_card = (id_list[card_index][0], -1)
-                                    id_list.append(loop_card)
-                                else:
-                                    break
-
-                            for card_index in range(len(id_list)):
-                                # Detect stone card
-                                if id_list[card_index][1] == STONE_CARD_ID:
-                                    detected_indexes.append(id_list[card_index][0])
-                                    continue
-
-                                # Detect poker hand
-                                if not detected:
-                                    if last_value is None or last_value > id_list[card_index][1] + id_offset + 1:
-                                        last_value = id_list[card_index][1]
-                                        last_indexes = [id_list[card_index][0]]
-                                        repeat_count = 1
-                                    elif last_value != id_list[card_index][1]:
-                                        last_value = id_list[card_index][1]
-                                        last_indexes.append(id_list[card_index][0])
-                                        repeat_count += 1
-
-                                    if repeat_count >= required_size:
-                                        detected = True
-                                elif repeat_count < max_size:
-                                    if last_value is None or last_value > id_list[card_index][1] + id_offset + 1:
-                                        repeat_count = max_size
-                                    elif last_value != id_list[card_index][1]:
-                                        last_value = id_list[card_index][1]
-                                        last_indexes.append(id_list[card_index][0])
-                                        repeat_count += 1
-
+                            detected, detected_indexes, last_indexes = self.detectPokerHandStraight(selected_cards, detected_indexes, last_indexes)
                         case "flush":
-                            required_size = 4 if "four_flush_straight" in self.rules else 5
-                            max_size = 5
-                            id_list = sorted(zip(selected_cards["indexes"], selected_cards["suits"], selected_cards["wildcards"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
-                            wildcard_count = 0
-                            for card_index in range(len(id_list)):
-                                if id_list[card_index][2]:
-                                    wildcard_count += 1 
-                            
-                            cur_suit_wildcard_count = 0
-                            for card_index in range(len(id_list)):
-                                # Detect stone card
-                                if id_list[card_index][1] == STONE_CARD_SUIT:
-                                    detected_indexes.append(id_list[card_index][0])
-                                    continue
-
-                                # Detect poker hand
-                                if not detected:
-                                    if last_value is None or last_value != id_list[card_index][1]:
-                                        last_value = id_list[card_index][1]
-                                        last_indexes = [id_list[card_index][0]]
-                                        repeat_count = 1
-                                        cur_suit_wildcard_count = wildcard_count
-                                    else:
-                                        last_indexes.append(id_list[card_index][0])
-                                        repeat_count += 1
-
-                                    if id_list[card_index][2]:
-                                        cur_suit_wildcard_count -= 1 
-
-                                    if repeat_count + cur_suit_wildcard_count >= required_size:
-                                        detected = True
-                                elif repeat_count < max_size:
-                                    if id_list[card_index][1] == last_value or id_list[card_index][2]:
-                                        last_indexes.append(id_list[card_index][0])
-                                        repeat_count += 1
-
+                            detected, detected_indexes, last_indexes = self.detectPokerHandFlush(selected_cards, detected_indexes, last_indexes)
                         case "four_of_kind":
-                            required_size = 4
-                            id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
-                            
-                            for card_index in range(len(id_list)):
-                                # Detect stone card
-                                if id_list[card_index][1] == STONE_CARD_ID:
-                                    detected_indexes.append(id_list[card_index][0])
-                                    continue
-
-                                # Detect poker hand
-                                if not detected:
-                                    if last_value is None or last_value != id_list[card_index][1]:
-                                        last_value = id_list[card_index][1]
-                                        last_indexes = [id_list[card_index][0]]
-                                        repeat_count = 1
-                                    else:
-                                        last_indexes.append(id_list[card_index][0])
-                                        repeat_count += 1
-
-                                    if repeat_count == required_size:
-                                        detected = True
-
+                            detected, detected_indexes, last_indexes = self.detectPokerHandManyOfKind(selected_cards, detected_indexes, last_indexes, kind_count=4)
                         case "five_of_kind":
-                            required_size = 5
-                            id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
-                            
-                            for card_index in range(len(id_list)):
-                                # Detect stone card
-                                if id_list[card_index][1] == STONE_CARD_ID:
-                                    detected_indexes.append(id_list[card_index][0])
-                                    continue
-
-                                # Detect poker hand
-                                if not detected:
-                                    if last_value is None or last_value != id_list[card_index][1]:
-                                        last_value = id_list[card_index][1]
-                                        last_indexes = [id_list[card_index][0]]
-                                        repeat_count = 1
-                                    else:
-                                        last_indexes.append(id_list[card_index][0])
-                                        repeat_count += 1
-
-                                    if repeat_count == required_size:
-                                        detected = True
+                            detected, detected_indexes, last_indexes = self.detectPokerHandManyOfKind(selected_cards, detected_indexes, last_indexes, kind_count=5)
 
                     # Save which selected cards were used for the poker hand
                     if detected:
@@ -632,6 +435,174 @@ class Simulation:
                 self.hand["type_id"] = cur_index
                 self.hand["scoring_cards_indexes"] = detected_selected_indexes[cur_index]
                 break
+
+    def detectPokerHandHighCard(self, selected_cards, detected_indexes, last_indexes):
+        detected = False
+
+        id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
+        
+        for card_index in range(len(id_list)):
+            # Detect stone card
+            if id_list[card_index][1] == STONE_CARD_ID:
+                detected_indexes.append(id_list[card_index][0])
+                continue
+            
+            # Detect poker hand
+            if not detected:
+                last_indexes.append(id_list[card_index][0])
+                detected = True
+
+        # High card is the base poker hand, so it will always be set as detected
+        detected = True
+
+        return detected, detected_indexes, last_indexes
+    
+    def detectPokerHandManyOfKind(self, selected_cards, detected_indexes, last_indexes, kind_count):
+        detected = False
+        repeat_count, last_value = 0, None
+
+        required_size = kind_count
+        id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
+        
+        for card_index in range(len(id_list)):
+            # Detect stone card
+            if id_list[card_index][1] == STONE_CARD_ID:
+                detected_indexes.append(id_list[card_index][0])
+                continue
+
+            # Detect poker hand
+            if not detected:
+                if last_value is None or last_value != id_list[card_index][1]:
+                    last_value = id_list[card_index][1]
+                    last_indexes = [id_list[card_index][0]]
+                    repeat_count = 1
+                else:
+                    last_indexes.append(id_list[card_index][0])
+                    repeat_count += 1
+
+                if repeat_count >= required_size:
+                    detected = True
+
+        return detected, detected_indexes, last_indexes
+    
+    def detectPokerHandTwoPair(self, selected_cards, detected_indexes, last_indexes):
+        detected = False
+        repeat_count, last_value = 0, None
+
+        required_size = 2
+        id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
+        detected_count = 0
+        
+        for card_index in range(len(id_list)):
+            # Detect stone card
+            if id_list[card_index][1] == STONE_CARD_ID:
+                detected_indexes.append(id_list[card_index][0])
+                continue
+
+            # Detect poker hand
+            if not detected:
+                if last_value is None or last_value != id_list[card_index][1]:
+                    last_value = id_list[card_index][1]
+                    repeat_count = 1
+                else:
+                    repeat_count += 1
+                    if repeat_count == 2:
+                        detected_count += 1
+                        last_indexes.append(id_list[card_index-1][0])
+                        last_indexes.append(id_list[card_index][0])
+
+                if detected_count >= required_size:
+                    detected = True
+
+        return detected, detected_indexes, last_indexes
+    
+    def detectPokerHandStraight(self, selected_cards, detected_indexes, last_indexes):
+        detected = False
+        repeat_count, last_value = 0, None
+
+        required_size = 4 if "four_flush_straight" in self.rules else 5
+        max_size = 5
+        id_offset = 1 if "straight_gap" in self.rules else 0
+        id_list = sorted(zip(selected_cards["indexes"], selected_cards["ids"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
+        
+        # Add id loop for aces
+        for card_index in range(len(id_list)):
+            if id_list[card_index][1] == len(CARD_RANK) - 1:
+                loop_card = (id_list[card_index][0], -1)
+                id_list.append(loop_card)
+            else:
+                break
+
+        for card_index in range(len(id_list)):
+            # Detect stone card
+            if id_list[card_index][1] == STONE_CARD_ID:
+                detected_indexes.append(id_list[card_index][0])
+                continue
+
+            # Detect poker hand
+            if not detected:
+                if last_value is None or last_value > id_list[card_index][1] + id_offset + 1:
+                    last_value = id_list[card_index][1]
+                    last_indexes = [id_list[card_index][0]]
+                    repeat_count = 1
+                elif last_value != id_list[card_index][1]:
+                    last_value = id_list[card_index][1]
+                    last_indexes.append(id_list[card_index][0])
+                    repeat_count += 1
+
+                if repeat_count >= required_size:
+                    detected = True
+            elif repeat_count < max_size:
+                if last_value is None or last_value > id_list[card_index][1] + id_offset + 1:
+                    repeat_count = max_size
+                elif last_value != id_list[card_index][1]:
+                    last_value = id_list[card_index][1]
+                    last_indexes.append(id_list[card_index][0])
+                    repeat_count += 1
+
+        return detected, detected_indexes, last_indexes
+    
+    def detectPokerHandFlush(self, selected_cards, detected_indexes, last_indexes):
+        detected = False
+        repeat_count, last_value = 0, None
+
+        required_size = 4 if "four_flush_straight" in self.rules else 5
+        max_size = 5
+        id_list = sorted(zip(selected_cards["indexes"], selected_cards["suits"], selected_cards["wildcards"]), key=lambda zipped_elem: zipped_elem[1], reverse=True)
+        wildcard_count = 0
+        for card_index in range(len(id_list)):
+            if id_list[card_index][2]:
+                wildcard_count += 1 
+        
+        cur_suit_wildcard_count = 0
+        for card_index in range(len(id_list)):
+            # Detect stone card
+            if id_list[card_index][1] == STONE_CARD_SUIT:
+                detected_indexes.append(id_list[card_index][0])
+                continue
+
+            # Detect poker hand
+            if not detected:
+                if last_value is None or last_value != id_list[card_index][1]:
+                    last_value = id_list[card_index][1]
+                    last_indexes = [id_list[card_index][0]]
+                    repeat_count = 1
+                    cur_suit_wildcard_count = wildcard_count
+                else:
+                    last_indexes.append(id_list[card_index][0])
+                    repeat_count += 1
+
+                if id_list[card_index][2]:
+                    cur_suit_wildcard_count -= 1 
+
+                if repeat_count + cur_suit_wildcard_count >= required_size:
+                    detected = True
+            elif repeat_count < max_size:
+                if id_list[card_index][1] == last_value or id_list[card_index][2]:
+                    last_indexes.append(id_list[card_index][0])
+                    repeat_count += 1
+
+        return detected, detected_indexes, last_indexes
 
     def getHandPlayingCards(self, held_hand=False, played_hand=False, card_id=False, card_rank=False, card_suit=False):
         result = {}
