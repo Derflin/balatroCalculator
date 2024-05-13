@@ -21,7 +21,7 @@ class CardEnhancment:
         base_id = id if id is not None else 0
         base_id = base_id if base_id >= 0 and base_id < len(CARD_ENHANCMENTS) else 0
 
-        base_enhancment = CARD_ENHANCMENTS[id]
+        base_enhancment = CARD_ENHANCMENTS[base_id]
 
         self.id = base_enhancment["id"]
         self.name = base_enhancment["name"]

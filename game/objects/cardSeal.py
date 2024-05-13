@@ -21,7 +21,7 @@ class CardSeal:
         base_id = id if id is not None else 0
         base_id = base_id if base_id >= 0 and base_id < len(CARD_SEALS) else 0
         
-        base_seal = CARD_SEALS[id]
+        base_seal = CARD_SEALS[base_id]
 
         self.id = base_seal["id"]
         self.name = base_seal["name"]

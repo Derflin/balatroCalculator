@@ -24,7 +24,7 @@ class PokerHand:
         base_id = id if id is not None else 0
         base_id = base_id if base_id >= 0 and base_id < len(POKER_HANDS) else 0
 
-        base_hand = POKER_HANDS[id]
+        base_hand = POKER_HANDS[base_id]
 
         self.id = base_hand["id"]
         self.name = base_hand["name"]
