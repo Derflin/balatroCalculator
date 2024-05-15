@@ -100,15 +100,15 @@ POKER_HANDS = [
     {"id": 0, "name": "High Card", "short_code": "high_card", "effect_active": {"b_add_chip": 5, "b_add_mult": 1}, "upgrade": {"effect_active": {"b_add_chip": 10, "b_add_mult": 1}}, "type_base": True},
     {"id": 1, "name": "Pair", "short_code": "pair", "effect_active": {"b_add_chip": 10, "b_add_mult": 2}, "upgrade": {"effect_active": {"b_add_chip": 15, "b_add_mult": 1}}, "type_base": True, "type_combine": [0]},
     {"id": 2, "name": "Two Pair", "short_code": "two_pair", "effect_active": {"b_add_chip": 20, "b_add_mult": 2}, "upgrade": {"effect_active": {"b_add_chip": 20, "b_add_mult": 1}}, "type_base": True, "type_combine": [0, 1]},
-    {"id": 3, "name": "Three of a Kind", "short_code": "three_of_kind", "effect_active": {"b_add_chip": 30, "b_add_mult": 3}, "upgrade": {"effect_active": {"b_add_chip": 15, "b_add_mult": 2}}, "type_base": True, "type_combine": [0, 1]},
-    {"id": 4, "name": "Straight", "short_code": "straight", "effect_active": {"b_add_chip": 30, "b_add_mult": 4}, "upgrade": {"effect_active": {"b_add_chip": 20, "b_add_mult": 2}}, "type_base": True, "type_combine": [0]},
-    {"id": 5, "name": "Flush", "short_code": "flush", "effect_active": {"b_add_chip": 35, "b_add_mult": 4}, "upgrade": {"effect_active": {"b_add_chip": 25, "b_add_mult": 2}}, "type_base": True, "type_combine": [0]},
-    {"id": 6, "name": "Full House", "short_code": "full_house", "effect_active": {"b_add_chip": 40, "b_add_mult": 4}, "upgrade": {"effect_active": {"b_add_chip": 30, "b_add_mult": 2}}, "type_base": False, "type_combine": [0, 1, 2, 3]},
+    {"id": 3, "name": "Three of a Kind", "short_code": "three_of_kind", "effect_active": {"b_add_chip": 30, "b_add_mult": 3}, "upgrade": {"effect_active": {"b_add_chip": 20, "b_add_mult": 2}}, "type_base": True, "type_combine": [0, 1]},
+    {"id": 4, "name": "Straight", "short_code": "straight", "effect_active": {"b_add_chip": 30, "b_add_mult": 4}, "upgrade": {"effect_active": {"b_add_chip": 30, "b_add_mult": 3}}, "type_base": True, "type_combine": [0]},
+    {"id": 5, "name": "Flush", "short_code": "flush", "effect_active": {"b_add_chip": 35, "b_add_mult": 4}, "upgrade": {"effect_active": {"b_add_chip": 15, "b_add_mult": 2}}, "type_base": True, "type_combine": [0]},
+    {"id": 6, "name": "Full House", "short_code": "full_house", "effect_active": {"b_add_chip": 40, "b_add_mult": 4}, "upgrade": {"effect_active": {"b_add_chip": 25, "b_add_mult": 2}}, "type_base": False, "type_combine": [0, 1, 2, 3]},
     {"id": 7, "name": "Four of a Kind", "short_code": "four_of_kind", "effect_active": {"b_add_chip": 60, "b_add_mult": 7}, "upgrade": {"effect_active": {"b_add_chip": 30, "b_add_mult": 3}}, "type_base": True, "type_combine": [0, 1, 3]},
-    {"id": 8, "name": "Straight Flush", "short_code": "straight_flush", "effect_active": {"b_add_chip": 100, "b_add_mult": 8}, "upgrade": {"effect_active": {"b_add_chip": 40, "b_add_mult": 3}}, "type_base": False, "type_combine": [0, 4, 5]},
+    {"id": 8, "name": "Straight Flush", "short_code": "straight_flush", "effect_active": {"b_add_chip": 100, "b_add_mult": 8}, "upgrade": {"effect_active": {"b_add_chip": 40, "b_add_mult": 4}}, "type_base": False, "type_combine": [0, 4, 5]},
     {"id": 9, "name": "Five of a Kind", "short_code": "five_of_kind", "effect_active": {"b_add_chip": 120, "b_add_mult": 12}, "upgrade": {"effect_active": {"b_add_chip": 35, "b_add_mult": 3}}, "type_base": True, "type_combine": [0, 1, 3, 7]},
-    {"id": 10, "name": "Flush House", "short_code": "flush_house", "effect_active": {"b_add_chip": 140, "b_add_mult": 14}, "upgrade": {"effect_active": {"b_add_chip": 40, "b_add_mult": 3}}, "type_base": False, "type_combine": [0, 1, 2, 3, 5]},
-    {"id": 11, "name": "Flush Five", "short_code": "flush_five", "effect_active": {"b_add_chip": 160, "b_add_mult": 16}, "upgrade": {"effect_active": {"b_add_chip": 40, "b_add_mult": 3}}, "type_base": False, "type_combine": [0, 1, 3, 5, 7, 9]}
+    {"id": 10, "name": "Flush House", "short_code": "flush_house", "effect_active": {"b_add_chip": 140, "b_add_mult": 14}, "upgrade": {"effect_active": {"b_add_chip": 40, "b_add_mult": 4}}, "type_base": False, "type_combine": [0, 1, 2, 3, 5]},
+    {"id": 11, "name": "Flush Five", "short_code": "flush_five", "effect_active": {"b_add_chip": 160, "b_add_mult": 16}, "upgrade": {"effect_active": {"b_add_chip": 50, "b_add_mult": 3}}, "type_base": False, "type_combine": [0, 1, 3, 5, 7, 9]}
 ]
 POKER_HANDS_STID = {
     "high_card": 0,
