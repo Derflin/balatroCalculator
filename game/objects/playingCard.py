@@ -1,17 +1,17 @@
 from config import INDENT
-from game.static import CARD_RANK, STONE_CARD_ID, STONE_CARD_RANK, CARD_SUIT, STONE_CARD_SUIT
+from game.static import CARD_RANK, CARD_RANK_STID, STONE_CARD_ID, STONE_CARD_RANK, CARD_SUIT, CARD_SUIT_STID, STONE_CARD_SUIT
 from game.objects.cardEdition import CardEdition
 from game.objects.cardEnhancment import CardEnhancment
 from game.objects.cardSeal import CardSeal
 
 class PlayingCard:
-    def __init__(self, id=0, suit_id=0, enhancment_id=0, edition_id=0, seal_id=0, additional_chip=0, active=True):
-        self.setBase(id)
-        self.setSuit(suit_id)
+    def __init__(self, id=0, stid=None, suit_id=0, suit_stid=None, enhancment_id=0, enhancment_stid=None, edition_id=0, edition_stid=None, seal_id=0, seal_stid=None, additional_chip=0, active=True):
+        self.setBase(id, stid)
+        self.setSuit(suit_id, suit_stid)
 
-        self.setEdition(edition_id)
-        self.setEnhancment(enhancment_id)
-        self.setSeal(seal_id)
+        self.setEdition(edition_id, edition_stid)
+        self.setEnhancment(enhancment_id, enhancment_stid)
+        self.setSeal(seal_id, seal_stid)
 
         self.setAdditionalChip(additional_chip)
 
@@ -35,9 +35,12 @@ class PlayingCard:
 
         return result_text
     
-    def setBase(self, id):
-        base_id = id if id is not None else 0
-        base_id = base_id if base_id >= 0 and base_id < len(CARD_RANK) else 0
+    def setBase(self, id, stid):
+        if stid is not None and stid in CARD_RANK_STID:
+            base_id = CARD_RANK_STID[stid]
+        else:
+            base_id = id if id is not None else 0
+            base_id = base_id if base_id >= 0 and base_id < len(CARD_RANK) else 0
 
         base_card = CARD_RANK[base_id]
 
@@ -58,28 +61,31 @@ class PlayingCard:
     def getSuit(self):
         return self.suit["id"] if not self.getStonedStatus() else STONE_CARD_SUIT
     
-    def setSuit(self, suit_id):
-        if suit_id is None or suit_id < 0 or suit_id > len(CARD_SUIT):
-            suit_id = 0
+    def setSuit(self, suit_id=None, suit_stid=None):
+        if suit_stid is not None and suit_stid in CARD_SUIT_STID:
+            suit_id = CARD_SUIT_STID[suit_stid]
+        else:
+            if suit_id is None or suit_id < 0 or suit_id > len(CARD_SUIT):
+                suit_id = 0 
         self.suit = CARD_SUIT[suit_id]
 
     def getEdition(self):
         return self.edition
 
-    def setEdition(self, edition_id):
-        self.edition = CardEdition(edition_id)
+    def setEdition(self, edition_id, edition_stid):
+        self.edition = CardEdition(id=edition_id, stid=edition_stid)
 
     def getEnhancment(self):
         return self.enhancment
     
-    def setEnhancment(self, enhancment_id):
-        self.enhancment = CardEnhancment(enhancment_id)
+    def setEnhancment(self, enhancment_id, enhancment_stid):
+        self.enhancment = CardEnhancment(id=enhancment_id, stid=enhancment_stid)
 
     def getSeal(self):
         return self.seal
     
-    def setSeal(self, seal_id):
-        self.seal = CardSeal(seal_id)
+    def setSeal(self, seal_id, seal_stid):
+        self.seal = CardSeal(id=seal_id, stid=seal_stid)
 
     def getEffectsActive(self):
         return self.effect_active

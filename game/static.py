@@ -66,10 +66,10 @@ STONE_CARD_RANK = 0
 #   short_code = String
 #]
 CARD_SUIT = [
-    {"id": 0, "name": "Diamond", "short_code": "D"},
-    {"id": 1, "name": "Heart", "short_code": "H"},
-    {"id": 2, "name": "Spade", "short_code": "S"},
-    {"id": 3, "name": "Club", "short_code": "C"}
+    {"id": 0, "name": "Diamonds", "short_code": "D"},
+    {"id": 1, "name": "Hearts", "short_code": "H"},
+    {"id": 2, "name": "Spades", "short_code": "S"},
+    {"id": 3, "name": "Clubs", "short_code": "C"}
 ]
 CARD_SUIT_STID = {
     "D": 0,
@@ -145,6 +145,13 @@ CARD_EDITIONS = [
     {"id": 3, "name": "Polychrome", "cost": 5, "effect_active": {"b_mul_mult": 1.5}},
     {"id": 4, "name": "Negative", "cost": 5, "effect_passive": {"joker_add_max_count": 1}}
 ]
+CARD_EDITIONS_STID = {
+    "base": 0,
+    "foil": 1,
+    "holo": 2,
+    "poly": 3,
+    "nega": 4
+}
 
 #[
 #   id = Int,
@@ -175,6 +182,16 @@ CARD_ENHANCMENTS = [
     {"id": 7, "name": "Gold Card"},
     {"id": 8, "name": "Lucky Card", "effect_active": {"b_add_mult": 20}, "condition": {"card_played": True, "activate_probability": 1.0/5.0}}
 ]
+CARD_ENHANCMENTS_STID = {
+    "bonus_card": 1,
+    "mult_card": 2,
+    "wild_card": 3,
+    "glass_card": 4,
+    "steel_card": 5,
+    "stone_card": 6,
+    "gold_card": 7,
+    "lucky_card": 8
+}
 
 #[
 #   id = Int,
@@ -194,6 +211,12 @@ CARD_SEALS = [
     {"id": 3, "name": "Blue Seal"},
     {"id": 4, "name": "Purple Seal"}
 ]
+CARD_SEALS_STID = {
+    "gold": 1,
+    "red": 2,
+    "blue": 3,
+    "purple": 4
+}
 
 #[
 #   id = Int,
@@ -419,3 +442,6 @@ JOKERS = [
     {"id": 148, "name": "Chicot", "affect_scoring": False, "copy_compat": False, "rarity": JOKER_RARITY_STID["legendary"], "cost": 20, "scoring_order": None},
     {"id": 149, "name": "Perkeo", "affect_scoring": False, "copy_compat": False, "rarity": JOKER_RARITY_STID["legendary"], "cost": 20, "scoring_order": None}
 ]
+JOKERS_STID={
+    
+}

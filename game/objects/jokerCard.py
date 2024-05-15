@@ -1,14 +1,14 @@
 import math
 
 from config import INDENT
-from game.static import JOKERS, JOKER_RARITY, DEFAULT_DECK_SIZE, CARD_RANK_STID
+from game.static import JOKERS, JOKERS_STID, JOKER_RARITY, DEFAULT_DECK_SIZE, CARD_RANK_STID
 from game.objects.cardEdition import CardEdition
 
 class JokerCard:
-    def __init__(self, id=0, edition_id=0, level=0, additional_sell_value=0, active=True):
-        self.setBase(id)
+    def __init__(self, id=0, stid=None, edition_id=0, edition_stid=None, level=0, additional_sell_value=0, active=True):
+        self.setBase(id, stid)
         
-        self.setEdition(edition_id)
+        self.setEdition(edition_id, edition_stid)
 
         self.setLevel(level, init_value=0)
     
@@ -41,9 +41,12 @@ class JokerCard:
 
         return result_text
     
-    def setBase(self, id):
-        base_id = id if id is not None else 0
-        base_id = base_id if base_id >= 0 and base_id < len(JOKERS) else 0
+    def setBase(self, id, stid):
+        if stid is not None and stid in JOKERS_STID:
+            base_id = JOKERS_STID[stid]
+        else:
+            base_id = id if id is not None else 0
+            base_id = base_id if base_id >= 0 and base_id < len(JOKERS) else 0
 
         base_joker = JOKERS[base_id]
 
@@ -74,8 +77,8 @@ class JokerCard:
     def getEdition(self):
         return self.edition
 
-    def setEdition(self, edition_id):
-        self.edition = CardEdition(edition_id)
+    def setEdition(self, edition_id, edition_stid):
+        self.edition = CardEdition(id=edition_id, stid=edition_stid)
 
     def getCopyCompat(self):
         return self.copy_compat

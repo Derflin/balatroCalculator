@@ -1,9 +1,9 @@
 from config import INDENT
-from game.static import CARD_EDITIONS
+from game.static import CARD_EDITIONS, CARD_EDITIONS_STID
 
 class CardEdition:
-    def __init__(self, id=0):
-        self.setBase(id)
+    def __init__(self, id=0, stid=None):
+        self.setBase(id, stid)
 
     def __str__(self):
         if self.name == None:
@@ -17,9 +17,12 @@ class CardEdition:
 
         return result_text
 
-    def setBase(self, id):
-        base_id = id if id is not None else 0
-        base_id = base_id if base_id >= 0 and base_id < len(CARD_EDITIONS) else 0
+    def setBase(self, id=None, stid=None):
+        if stid is not None and stid in CARD_EDITIONS_STID:
+            base_id = CARD_EDITIONS_STID[stid]
+        else:
+            base_id = id if id is not None else 0
+            base_id = base_id if base_id >= 0 and base_id < len(CARD_EDITIONS) else 0
 
         base_edition = CARD_EDITIONS[base_id]
         
