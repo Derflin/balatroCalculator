@@ -41,7 +41,7 @@ class JokerCard:
 
         return result_text
     
-    def setBase(self, id, stid):
+    def setBase(self, id=None, stid=None):
         if stid is not None and stid in JOKERS_STID:
             base_id = JOKERS_STID[stid]
         else:
@@ -77,7 +77,7 @@ class JokerCard:
     def getEdition(self):
         return self.edition
 
-    def setEdition(self, edition_id, edition_stid):
+    def setEdition(self, edition_id=None, edition_stid=None):
         self.edition = CardEdition(id=edition_id, stid=edition_stid)
 
     def getCopyCompat(self):

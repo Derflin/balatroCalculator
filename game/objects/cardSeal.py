@@ -17,7 +17,7 @@ class CardSeal:
         
         return result_text
     
-    def setBase(self, id, stid):
+    def setBase(self, id=None, stid=None):
         if stid is not None and stid in CARD_SEALS_STID:
             base_id = CARD_SEALS_STID[stid]
         else:

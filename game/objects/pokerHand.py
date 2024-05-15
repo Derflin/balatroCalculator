@@ -20,7 +20,7 @@ class PokerHand:
         upgrade_score_modifier = self.getUpgradeScoreModifier()
         return pattern.format(self.name, self.level, base_score_modifier[0], base_score_modifier[1], upgrade_score_modifier[0], upgrade_score_modifier[1])
 
-    def setBase(self, id, stid):
+    def setBase(self, id=None, stid=None):
         if stid is not None and stid in POKER_HANDS_STID:
             base_id = POKER_HANDS_STID[stid]
         else:

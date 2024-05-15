@@ -35,7 +35,7 @@ class PlayingCard:
 
         return result_text
     
-    def setBase(self, id, stid):
+    def setBase(self, id=None, stid=None):
         if stid is not None and stid in CARD_RANK_STID:
             base_id = CARD_RANK_STID[stid]
         else:
@@ -72,19 +72,19 @@ class PlayingCard:
     def getEdition(self):
         return self.edition
 
-    def setEdition(self, edition_id, edition_stid):
+    def setEdition(self, edition_id=None, edition_stid=None):
         self.edition = CardEdition(id=edition_id, stid=edition_stid)
 
     def getEnhancment(self):
         return self.enhancment
     
-    def setEnhancment(self, enhancment_id, enhancment_stid):
+    def setEnhancment(self, enhancment_id=None, enhancment_stid=None):
         self.enhancment = CardEnhancment(id=enhancment_id, stid=enhancment_stid)
 
     def getSeal(self):
         return self.seal
     
-    def setSeal(self, seal_id, seal_stid):
+    def setSeal(self, seal_id=None, seal_stid=None):
         self.seal = CardSeal(id=seal_id, stid=seal_stid)
 
     def getEffectsActive(self):

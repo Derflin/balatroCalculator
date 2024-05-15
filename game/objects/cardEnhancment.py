@@ -17,7 +17,7 @@ class CardEnhancment:
         
         return result_text
     
-    def setBase(self, id, stid):
+    def setBase(self, id=None, stid=None):
         if stid is not None and stid in CARD_ENHANCMENTS_STID:
             base_id = CARD_ENHANCMENTS_STID[stid]
         else:
