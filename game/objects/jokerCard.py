@@ -82,8 +82,8 @@ class JokerCard:
     def getEdition(self):
         return self.edition
 
-    def setEdition(self, edition_id=None, edition_stid=None):
-        self.edition = CardEdition(id=edition_id, stid=edition_stid)
+    def setEdition(self, id=None, stid=None):
+        self.edition = CardEdition(id=id, stid=stid)
 
     def getCopyCompat(self):
         return self.copy_compat

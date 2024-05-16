@@ -109,12 +109,11 @@ Project is licensed under the [MIT](LICENSE) license.
 
 ## TODO
 
-- [] Add support for consumables and vouchers
+- [] Add type validation for args provided by user
 - [] Add option to trigger more than one card at once
 - [] Automation tests
-- [] remove redundant name in functions for example change suit_id to id in setSuit
-- [] Remove unused imports and variables
 - [] Adjust displayed card_rank or card_suit in conditions, to include names apart from IDs (maybe add some kind of tags to message sent to logger and then detect them in logger and replace "object_tag{ID}object_tag" with something like "object_type_name (ID: {id})")
 - [] Implement adding jokers/playing cards or changing editions/seals/enhancments/suits/rank based on their names, rather than ID from configuration file
 - [] Implement feature for optimizing joker/playing cards placement to maximize score 
 - [] Add GUI
+- [] Add support for consumables and vouchers

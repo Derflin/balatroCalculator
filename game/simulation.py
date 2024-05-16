@@ -129,26 +129,26 @@ class Simulation:
 
     def setPlayingCardSuit(self, index, suit_id):
         if index >= 0 and index < len(self.hand["cards"]):
-            self.hand["cards"][index]["card"].setSuit(suit_id)
+            self.hand["cards"][index]["card"].setSuit(id=suit_id)
             return True
         return False
 
     def setPlayingCardEnhancment(self, index, enhancment_id):
         if index >= 0 and index < len(self.hand["cards"]):
-            self.hand["cards"][index]["card"].setEnhancment(enhancment_id=enhancment_id)
+            self.hand["cards"][index]["card"].setEnhancment(id=enhancment_id)
             self.updateSelectedPokerHand()
             return True
         return False
 
     def setPlayingCardEdition(self, index, edition_id):
         if index >= 0 and index < len(self.hand["cards"]):
-            self.hand["cards"][index]["card"].setEdition(edition_id=edition_id)
+            self.hand["cards"][index]["card"].setEdition(id=edition_id)
             return True
         return False
 
     def setPlayingCardSeal(self, index, seal_id):
         if index >= 0 and index < len(self.hand["cards"]):
-            self.hand["cards"][index]["card"].setSeal(seal_id=seal_id)
+            self.hand["cards"][index]["card"].setSeal(id=seal_id)
             return True
         return False
 
@@ -223,7 +223,7 @@ class Simulation:
 
     def setJokerEdition(self, index, edition_id):
         if index >= 0 and index < len(self.jokers):
-            self.jokers[index]["card"].setEdition(edition_id=edition_id)
+            self.jokers[index]["card"].setEdition(id=edition_id)
             return True
         return False
 
@@ -1181,13 +1181,13 @@ class Simulation:
             card_id = card_details["base"]["id"] - 2
             self.addPlayingCard(id=card_id)
 
-            self.hand["cards"][index]["card"].setSuit(suit_stid=card_details["base"]["suit"][0])
+            self.hand["cards"][index]["card"].setSuit(stid=card_details["base"]["suit"][0])
             edition_stid = card_details["edition"]["type"] if "edition" in card_details else None
-            self.hand["cards"][index]["card"].setEdition(edition_stid=edition_stid)
+            self.hand["cards"][index]["card"].setEdition(stid=edition_stid)
             enhancment_stid = card_details["ability"]["effect"].replace(" ", "_").lower() if card_details["ability"]["effect"] is not None and card_details["ability"]["effect"] != "" else None
-            self.hand["cards"][index]["card"].setEnhancment(enhancment_stid=enhancment_stid)
+            self.hand["cards"][index]["card"].setEnhancment(stid=enhancment_stid)
             seal_stid = card_details["seal"].replace(" ", "_").lower() if "seal" in card_details else None 
-            self.hand["cards"][index]["card"].setSeal(seal_stid=seal_stid)
+            self.hand["cards"][index]["card"].setSeal(stid=seal_stid)
             self.hand["cards"][index]["card"].setAdditionalChip(card_details["ability"]["perma_bonus"])
             self.hand["cards"][index]["card"].setActive(not card_details["debuff"])
 
@@ -1200,7 +1200,7 @@ class Simulation:
             self.addJoker(id=card_id)
 
             edition_stid = card_details["edition"]["type"] if "edition" in card_details else None
-            self.jokers[index]["card"].setEdition(edition_stid=edition_stid)
+            self.jokers[index]["card"].setEdition(stid=edition_stid)
             current_value = None
             if card_details["ability"]["bonus"] != 0:
                 current_value = card_details["ability"]["bonus"]

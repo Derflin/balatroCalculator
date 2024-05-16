@@ -62,31 +62,31 @@ class PlayingCard:
     def getSuit(self):
         return self.suit["id"] if not self.getStonedStatus() else STONE_CARD_SUIT
     
-    def setSuit(self, suit_id=None, suit_stid=None):
-        if suit_stid is not None and suit_stid in CARD_SUIT_STID:
-            suit_id = CARD_SUIT_STID[suit_stid]
+    def setSuit(self, id=None, stid=None):
+        if stid is not None and stid in CARD_SUIT_STID:
+            id = CARD_SUIT_STID[stid]
         else:
-            if suit_id is None or suit_id < 0 or suit_id > len(CARD_SUIT):
-                suit_id = 0 
-        self.suit = CARD_SUIT[suit_id]
+            if id is None or id < 0 or id > len(CARD_SUIT):
+                id = 0 
+        self.suit = CARD_SUIT[id]
 
     def getEdition(self):
         return self.edition
 
-    def setEdition(self, edition_id=None, edition_stid=None):
-        self.edition = CardEdition(id=edition_id, stid=edition_stid)
+    def setEdition(self, id=None, stid=None):
+        self.edition = CardEdition(id=id, stid=stid)
 
     def getEnhancment(self):
         return self.enhancment
     
-    def setEnhancment(self, enhancment_id=None, enhancment_stid=None):
-        self.enhancment = CardEnhancment(id=enhancment_id, stid=enhancment_stid)
+    def setEnhancment(self, id=None, stid=None):
+        self.enhancment = CardEnhancment(id=id, stid=stid)
 
     def getSeal(self):
         return self.seal
     
-    def setSeal(self, seal_id=None, seal_stid=None):
-        self.seal = CardSeal(id=seal_id, stid=seal_stid)
+    def setSeal(self, id=None, stid=None):
+        self.seal = CardSeal(id=id, stid=stid)
 
     def getEffectsActive(self):
         return self.effect_active
