@@ -111,7 +111,7 @@ class JokerCard:
                         if dollar_count is not None:
                             return dollar_count
                     case "joker_count":
-                        joker_count = simulation.getState(key="joker_count")
+                        joker_count = simulation.getJokerCount()
                         if joker_count is not None:
                             return joker_count
                     case "deck_below_default_count":

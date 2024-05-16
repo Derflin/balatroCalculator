@@ -2,7 +2,6 @@
     "state": {
         "skipped_blinds": 0,
         "dollar_count": 0,
-        "joker_count": 3,
         "joker_count_max": 5,
         "card_deck_size": 52,
         "stone_card_deck_count": 0,

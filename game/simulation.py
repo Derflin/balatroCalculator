@@ -15,7 +15,6 @@ class Simulation:
         self.state = {
             "skipped_blinds": 0,
             "dollar_count": 0,
-            "joker_count": 0,
             "joker_count_max": DEFAULT_JOKER_COUNT_MAX,
             "card_deck_size": DEFAULT_DECK_SIZE,
             "stone_card_deck_count": 0,
@@ -49,7 +48,7 @@ class Simulation:
         else:
             return self.state
 
-    def setState(self, state=None, skipped_blinds=None, dollar_count=None, joker_count=None, joker_count_max=None, card_deck_size=None, stone_card_deck_count=None, steel_card_deck_count=None, discard_remain=None, card_deck_remain=None):
+    def setState(self, state=None, skipped_blinds=None, dollar_count=None, joker_count_max=None, card_deck_size=None, stone_card_deck_count=None, steel_card_deck_count=None, discard_remain=None, card_deck_remain=None):
         if state is not None:
             self.state = state
         else:
@@ -57,8 +56,6 @@ class Simulation:
                 self.state["skipped_blinds"] = skipped_blinds
             if dollar_count is not None:
                 self.state["dollar_count"] = dollar_count
-            if joker_count is not None:
-                self.state["joker_count"] = joker_count
             if joker_count_max is not None:
                 self.state["joker_count_max"] = joker_count_max
             if card_deck_size is not None:
@@ -204,7 +201,6 @@ class Simulation:
         else:
             self.jokers.insert(index, joker)
 
-        self.setState(joker_count=len(self.jokers))
         self.updateJokerRules()
         self.updateSelectedPokerHand()
 
@@ -214,7 +210,6 @@ class Simulation:
         if index >= 0 and index < len(self.jokers):
             removed_elem = self.jokers.pop(index)
 
-            self.setState(joker_count=len(self.jokers))
             self.updateJokerRules()
             self.updateSelectedPokerHand()
             return True
@@ -1149,7 +1144,6 @@ class Simulation:
         save_state = {
             "skipped_blinds": export_save["GAME"]["skips"],
             "dollar_count": export_save["GAME"]["dollars"],
-            "joker_count": export_save["cardAreas"]["jokers"]["config"]["card_count"],
             "joker_count_max": joker_count_max,
             "card_deck_size": all_cards_count,
             "stone_card_deck_count": stone_card_deck_count,

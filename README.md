@@ -111,7 +111,6 @@ Project is licensed under the [MIT](LICENSE) license.
 
 - [] Add inflation and discount rate
 - [] Add support for consumables and vouchers
-- [] Make joker count and max joker count calculate automatically
 - [] Add option to trigger more than one card at once
 - [] Automation tests
 - [] remove redundant name in functions for example change suit_id to id in setSuit
