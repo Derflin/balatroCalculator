@@ -5,7 +5,8 @@ from game.objects.cardEnhancment import CardEnhancment
 from game.objects.cardSeal import CardSeal
 
 class PlayingCard:
-    def __init__(self, id=0, stid=None, suit_id=0, suit_stid=None, enhancment_id=0, enhancment_stid=None, edition_id=0, edition_stid=None, seal_id=0, seal_stid=None, additional_chip=0, active=True):
+    def __init__(self, sim_ref, id=0, stid=None, suit_id=0, suit_stid=None, enhancment_id=0, enhancment_stid=None, edition_id=0, edition_stid=None, seal_id=0, seal_stid=None, additional_chip=0, active=True):
+        self.sim_ref = sim_ref
         self.setBase(id, stid)
         self.setSuit(suit_id, suit_stid)
 
@@ -184,6 +185,7 @@ class PlayingCard:
 
     def fromDict(self, export_dict):
         self.__init__(
+            sim_ref=self.sim_ref,
             id = export_dict["id"],
             suit_id = export_dict["suit_id"],
             additional_chip = export_dict["additional_chip"],

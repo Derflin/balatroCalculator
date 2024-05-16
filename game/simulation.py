@@ -20,7 +20,9 @@ class Simulation:
             "stone_card_deck_count": 0,
             "steel_card_deck_count": 0,
             "discard_remain": 0,
-            "card_deck_remain": DEFAULT_DECK_SIZE
+            "card_deck_remain": DEFAULT_DECK_SIZE,
+            "inflation": 0,
+            "discount_rate": 0.0
         }
 
         self.poker_hands = []
@@ -48,7 +50,7 @@ class Simulation:
         else:
             return self.state
 
-    def setState(self, state=None, skipped_blinds=None, dollar_count=None, joker_count_max=None, card_deck_size=None, stone_card_deck_count=None, steel_card_deck_count=None, discard_remain=None, card_deck_remain=None):
+    def setState(self, state=None, skipped_blinds=None, dollar_count=None, joker_count_max=None, card_deck_size=None, stone_card_deck_count=None, steel_card_deck_count=None, discard_remain=None, card_deck_remain=None, inflation=None, discount_rate=None):
         if state is not None:
             self.state = state
         else:
@@ -68,6 +70,10 @@ class Simulation:
                 self.state["discard_remain"] = discard_remain
             if card_deck_remain is not None:
                 self.state["card_deck_remain"] = card_deck_remain
+            if inflation is not None:
+                self.state["inflation"] = inflation
+            if discount_rate is not None:
+                self.state["discount_rate"] = discount_rate
 
         return True
 
@@ -102,7 +108,7 @@ class Simulation:
     def addPlayingCard(self, id=None, index=None, suit_id=None, enhancment_id=None, edition_id=None, seal_id=None, add_chip=None):
         playing_card = {
             "selected": False,
-            "card": PlayingCard(id, suit_id=suit_id, enhancment_id=enhancment_id, edition_id=edition_id, seal_id=seal_id, additional_chip=add_chip)
+            "card": PlayingCard(self, id, suit_id=suit_id, enhancment_id=enhancment_id, edition_id=edition_id, seal_id=seal_id, additional_chip=add_chip)
         }
 
         if index is None:
@@ -193,7 +199,7 @@ class Simulation:
     def addJoker(self, id=None, index=None, edition_id=None, level=None, add_sell_value=None):
         joker = {
             "copied_index": None,    
-            "card": JokerCard(id, edition_id=edition_id, level=level, additional_sell_value=add_sell_value)
+            "card": JokerCard(self, id, edition_id=edition_id, level=level, additional_sell_value=add_sell_value)
         }
 
         if index is None:
@@ -262,7 +268,7 @@ class Simulation:
         for joker_index in range(len(self.jokers)):
             if joker_index == exclude_index:
                 continue
-            sell_value += self.jokers[joker_index]["card"].getSellValue()
+            sell_value += self.jokers[joker_index]["card"].getSellValue(inflation=self.getState(key="inflation"), discount_rate=self.getState(key="discount_rate"))
         return sell_value
 
     def getJokerSellValueFromLeft(self, joker_stop_index=None):
@@ -271,7 +277,7 @@ class Simulation:
         for joker_index in range(len(self.jokers)):
             if joker_index == stop_index:
                 break
-            sell_value += self.jokers[joker_index]["card"].getSellValue()
+            sell_value += self.jokers[joker_index]["card"].getSellValue(inflation=self.getState(key="inflation"), discount_rate=self.getState(key="discount_rate"))
         return sell_value
 
     def setJokerActive(self, index, value):
@@ -890,7 +896,7 @@ class Simulation:
                                 if joker_index is None:
                                     continue
                                 self.cur_joker_index = joker_index
-                                score_modifier, condition = self.jokers[joker_index]["card"].getBaseScoreModifier(simulation=self)
+                                score_modifier, condition = self.jokers[joker_index]["card"].getBaseScoreModifier()
                                 additional_trigger_count += self.checkConditionScoring(game_scoring_stage, card_effects_history, score_modifier, condition, card_index=card_index, activated_joker_indexes=activated_joker_indexes, joker_index=joker_index)
 
                             # Count edition effect on card
@@ -925,7 +931,7 @@ class Simulation:
                                 if joker_index is None:
                                     continue
                                 self.cur_joker_index = joker_index
-                                score_modifier, condition = self.jokers[joker_index]["card"].getBaseScoreModifier(simulation=self)
+                                score_modifier, condition = self.jokers[joker_index]["card"].getBaseScoreModifier()
                                 additional_trigger_count += self.checkConditionScoring(game_scoring_stage, card_effects_history, score_modifier, condition, card_index=card_index, activated_joker_indexes=activated_joker_indexes, joker_index=joker_index)
 
                             # Save card effects history in the general effects history along with trigger count information
@@ -943,7 +949,7 @@ class Simulation:
                         active_joker_index = active_joker_indexes[joker_index]
                         if active_joker_index is not None:
                             self.cur_joker_index = active_joker_index
-                            score_modifier, condition = self.jokers[active_joker_index]["card"].getBaseScoreModifier(simulation=self)
+                            score_modifier, condition = self.jokers[active_joker_index]["card"].getBaseScoreModifier()
                             additional_trigger_count += self.checkConditionScoring(game_scoring_stage, card_effects_history, score_modifier, condition)
 
                         # Count edition effect on card
@@ -1139,7 +1145,7 @@ class Simulation:
                 if "Steel Card" in card["ability"]["effect"]:
                     steel_card_deck_count += 1
         discard_remain = export_save["GAME"]["current_round"]["discards_left"] if "current_round" in export_save["GAME"] and "discards_left" in export_save["GAME"]["current_round"] else export_save["GAME"]["round_resets"]["discards"]
-
+        discount_rate = 0 if "v_clearance_sale" not in export_save["GAME"]["used_vouchers"] else 0.25 if "v_liquidation" not in export_save["GAME"]["used_vouchers"] else 0.5
 
         save_state = {
             "skipped_blinds": export_save["GAME"]["skips"],
@@ -1150,6 +1156,8 @@ class Simulation:
             "steel_card_deck_count": steel_card_deck_count,
             "discard_remain": discard_remain,
             "card_deck_remain": export_save["cardAreas"]["deck"]["config"]["card_count"],
+            "inflation": export_save["GAME"]["inflation"],
+            "discount_rate": discount_rate
         }
 
         # Set game state
@@ -1202,7 +1210,7 @@ class Simulation:
                 current_value = card_details["ability"]["x_mult"] - 1.0
             level_step = card_details["ability"]["extra"] if "extra" in card_details["ability"] else None
             if current_value is not None and level_step is not None:
-                level = current_value / level_step
+                level = int(round(current_value / level_step, 0))
                 self.jokers[index]["card"].setLevel(level)
             self.jokers[index]["card"].setAdditionalSellValue(card_details["extra_cost"])
             self.jokers[index]["card"].setActive(not card_details["debuff"])

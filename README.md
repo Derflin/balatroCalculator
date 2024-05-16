@@ -109,7 +109,6 @@ Project is licensed under the [MIT](LICENSE) license.
 
 ## TODO
 
-- [] Add inflation and discount rate
 - [] Add support for consumables and vouchers
 - [] Add option to trigger more than one card at once
 - [] Automation tests

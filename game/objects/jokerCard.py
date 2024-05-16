@@ -5,7 +5,8 @@ from game.static import JOKERS, JOKERS_STID, JOKER_RARITY, DEFAULT_DECK_SIZE, CA
 from game.objects.cardEdition import CardEdition
 
 class JokerCard:
-    def __init__(self, id=0, stid=None, edition_id=0, edition_stid=None, level=0, additional_sell_value=0, active=True):
+    def __init__(self, sim_ref, id=0, stid=None, edition_id=0, edition_stid=None, level=0, additional_sell_value=0, active=True):
+        self.sim_ref = sim_ref
         self.setBase(id, stid)
         
         self.setEdition(edition_id, edition_stid)
@@ -32,7 +33,11 @@ class JokerCard:
         effect_passive = "None" if not self.effect_passive else " | ".join([key for key in self.effect_passive])
         condition = "None" if not self.condition else str(self.condition)
         condition += "" if not self.condition_variety else F" | Variety: {str(self.condition_variety)}"
-        result_text = pattern.format(self.name, level, rarity_name, status, effect_active, effect_passive, condition, self.getSellValue())
+        inflation = self.sim_ref.getState(key="inflation")
+        inflation = inflation if inflation is not None else 0
+        discount_rate = self.sim_ref.getState(key="discount_rate")
+        discount_rate = discount_rate if discount_rate is not None else 0.0
+        result_text = pattern.format(self.name, level, rarity_name, status, effect_active, effect_passive, condition, self.getSellValue(inflation=inflation, discount_rate=discount_rate))
 
         additional_texts = [str(self.edition)]
         for text in additional_texts:
@@ -89,75 +94,75 @@ class JokerCard:
     def getEffectsActive(self):
         return self.effect_active
     
-    def getEffectActive(self, key, simulation=None):
+    def getEffectActive(self, key):
         if key in self.effect_active:
             if isinstance(self.effect_active[key], str):
                 key_value = self.effect_active[key]
                 match key_value:
                     case "discard_remain":
-                        discard_count = simulation.getState(key="discard_remain")
+                        discard_count = self.sim_ref.getState(key="discard_remain")
                         if discard_count is not None:
                             return discard_count
                     case "card_deck_remain":
-                        card_deck_remain = simulation.getState(key="card_deck_remain")
+                        card_deck_remain = self.sim_ref.getState(key="card_deck_remain")
                         if card_deck_remain is not None:
                             return card_deck_remain
                     case "stone_card_deck_count":
-                        stone_card_deck_count = simulation.getState(key="stone_card_deck_count")
+                        stone_card_deck_count = self.sim_ref.getState(key="stone_card_deck_count")
                         if stone_card_deck_count is not None:
                             return stone_card_deck_count
                     case "dollar_count":
-                        dollar_count = simulation.getState(key="dollar_count")
+                        dollar_count = self.sim_ref.getState(key="dollar_count")
                         if dollar_count is not None:
                             return dollar_count
                     case "joker_count":
-                        joker_count = simulation.getJokerCount()
+                        joker_count = self.sim_ref.getJokerCount()
                         if joker_count is not None:
                             return joker_count
                     case "deck_below_default_count":
-                        card_deck_size = simulation.getState(key="card_deck_size")
+                        card_deck_size = self.sim_ref.getState(key="card_deck_size")
                         if card_deck_size is not None:
                             value = DEFAULT_DECK_SIZE - card_deck_size
                             return value if value >= 0 else 0
                     case "dollar_count_div_five":
-                        dollar_count = simulation.getState(key="dollar_count")
+                        dollar_count = self.sim_ref.getState(key="dollar_count")
                         if dollar_count is not None:
                             value = dollar_count // 5
                             return value if value >= 0 else 0
                     case "other_jokers_sell_value":
-                        sell_value = simulation.getOtherJokerSellValue()
+                        sell_value = self.sim_ref.getOtherJokerSellValue()
                         return sell_value if sell_value >= 0 else 0
                     case "left_jokers_sell_value":
-                        sell_value = simulation.getJokerSellValueFromLeft()
+                        sell_value = self.sim_ref.getJokerSellValueFromLeft()
                         return sell_value if sell_value >= 0 else 0
                     case "held_queen_count":
                         count = 0
-                        held_cards = simulation.getHandPlayingCards(held_hand=True, card_id=True)
+                        held_cards = self.sim_ref.getHandPlayingCards(held_hand=True, card_id=True)
                         for card_id in held_cards["id"]:
                             if card_id == CARD_RANK_STID["Q"]:
                                 count += 1
                         return count
                     case "held_lowest_rank":
                         value = None
-                        held_cards = simulation.getHandPlayingCards(held_hand=True, card_rank=True)
+                        held_cards = self.sim_ref.getHandPlayingCards(held_hand=True, card_rank=True)
                         for card_rank in held_cards["rank"]:
                             if value is None or value > card_rank:
                                 value = card_rank
                         return value if value is not None else 0
                     case "played_hand_count":
-                        played_hand_count = simulation.getPokerHandActivePlayedCount()
+                        played_hand_count = self.sim_ref.getPokerHandActivePlayedCount()
                         return played_hand_count
                     case "empty_joker_slot":
-                        joker_count_max = simulation.getJokerCountMax()
-                        joker_count = simulation.getJokerCount(ignore_id=self.getId())
+                        joker_count_max = self.sim_ref.getJokerCountMax()
+                        joker_count = self.sim_ref.getJokerCount(ignore_id=self.getId())
                         value = joker_count_max - joker_count
                         return value if value >= 0 else 0
                     case "full_deck_steel_card_count":
-                        steel_card_deck_count = simulation.getState(key="steel_card_deck_count")
+                        steel_card_deck_count = self.sim_ref.getState(key="steel_card_deck_count")
                         if steel_card_deck_count is not None:
                             return steel_card_deck_count
                     case "skipped_blinds_count":
-                        skipped_blinds = simulation.getState(ky="skipped_blinds")
+                        skipped_blinds = self.sim_ref.getState(ky="skipped_blinds")
                         if skipped_blinds is not None:
                             return skipped_blinds
             else:
@@ -242,19 +247,20 @@ class JokerCard:
         self.active = bool(value) if value is not None else True
 
     #NOTE: Based on: https://www.reddit.com/r/balatro/comments/1b6lito/base_sell_value_calculation/
-    def getSellValue(self, discount_rate=0.0, game_inflation=0):
-        cost = (self.getBaseCost() + game_inflation + self.edition.getBaseCost()) * (1.0 - discount_rate)
+    def getSellValue(self, discount_rate=0.0, inflation=0):
+        cost = (self.getBaseCost() + inflation + self.edition.getBaseCost()) * (1.0 - discount_rate)
         sell_value = max(1, math.floor(cost / 2.0)) + self.getAdditionalSellValue()
+        sell_value = int(round(sell_value, 0))
 
         return sell_value
     
-    def getBaseScoreModifier(self, simulation):
+    def getBaseScoreModifier(self):
         score_modifier = {}
         if self.active:
-            card_add_chip = self.getEffectActive("b_add_chip", simulation) * self.getEffectActive("m_add_chip", simulation) + self.getEffectActive("a_add_chip", simulation)
-            card_add_mult = self.getEffectActive("b_add_mult", simulation) * self.getEffectActive("m_add_mult", simulation) + self.getEffectActive("a_add_mult", simulation)
-            card_mul_mult = self.getEffectActive("b_mul_mult", simulation) * self.getEffectActive("m_mul_mult", simulation) + self.getEffectActive("a_mul_mult", simulation)
-            card_add_trig = self.getEffectActive("a_trigger", simulation)
+            card_add_chip = self.getEffectActive("b_add_chip") * self.getEffectActive("m_add_chip") + self.getEffectActive("a_add_chip")
+            card_add_mult = self.getEffectActive("b_add_mult") * self.getEffectActive("m_add_mult") + self.getEffectActive("a_add_mult")
+            card_mul_mult = self.getEffectActive("b_mul_mult") * self.getEffectActive("m_mul_mult") + self.getEffectActive("a_mul_mult")
+            card_add_trig = self.getEffectActive("a_trigger")
 
             if card_add_chip != 0:
                 score_modifier["add_chip"] = card_add_chip
@@ -285,6 +291,7 @@ class JokerCard:
 
     def fromDict(self, export_dict):
         self.__init__(
+            sim_ref=self.sim_ref,
             id = export_dict["id"],
             level = export_dict["level"],
             additional_sell_value = export_dict["additional_sell_value"],

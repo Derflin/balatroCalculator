@@ -70,7 +70,7 @@ class AppCommandLine:
                 for elem in command_inputs:
                     args = elem.lstrip("-").split("=")
                     arg_name = args[0]
-                    arg_value = int(args[1]) if args[1].isnumeric() else args[1]
+                    arg_value = int(args[1]) if args[1].isnumeric() else float(args[1]) if args[1].replace('.', '', 1).isnumeric() else args[1]
                     if "index" in arg_name:
                         arg_value -= 1
                     command_args[arg_name] = arg_value
@@ -275,6 +275,8 @@ class AppCommandLine:
             steel_card_deck_count = None if "steel_card_deck_count" not in command_args else command_args["steel_card_deck_count"]
             discard_remain = None if "discard_remain" not in command_args else command_args["discard_remain"]
             card_deck_remain = None if "card_deck_remain" not in command_args else command_args["card_deck_remain"]
+            inflation = None if "inflation" not in command_args else command_args["inflation"]
+            discount_rate = None if "discount_rate" not in command_args else command_args["discount_rate"]
             
             status = self.sim.setState(
                 skipped_blinds=skipped_blinds,
@@ -284,7 +286,9 @@ class AppCommandLine:
                 stone_card_deck_count=stone_card_deck_count,
                 steel_card_deck_count=steel_card_deck_count,
                 discard_remain=discard_remain,
-                card_deck_remain=card_deck_remain
+                card_deck_remain=card_deck_remain,
+                inflation = inflation,
+                discount_rate = discount_rate
             )
 
             if status:

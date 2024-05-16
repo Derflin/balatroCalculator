@@ -7,7 +7,9 @@
         "stone_card_deck_count": 0,
         "steel_card_deck_count": 0,
         "discard_remain": 0,
-        "card_deck_remain": 52
+        "card_deck_remain": 52,
+        "inflation": 0,
+        "discount_rate": 0.0
     },
     "poker_hands": [
         {

@@ -232,6 +232,18 @@ COMMANDS = {
                 "target": TARGETS["state"]["name"]
             },
             {
+                "name": "inflation",
+                "desc": "Acccumulated inflation value affecting sell values",
+                "required": False,
+                "target": TARGETS["state"]["name"]
+            },
+            {
+                "name": "discount_rate",
+                "desc": "Discount rate affecting prices",
+                "required": False,
+                "target": TARGETS["state"]["name"]
+            },
+            {
                 "name": "index",
                 "desc": "Index of poker hand",
                 "required": True,
