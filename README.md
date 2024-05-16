@@ -8,6 +8,7 @@ The project is about implementing score calculator for game called "Balatro" usi
 * Trigger card selection for a playing card in hand
 * Calculate expected result score based on current game state
 * Save and load game states from JSON file
+* Load game state from game saves file in JKR format
 
 Currently the project only supports interaction through command line interface (CLI), but in the future I would like to also add a graphical user interface (GUI) to it. Apart from that, I also intend to add some other features mentioned in the TODO section, but since I am working on this project alone and only in my free time, I am not sure when exactly I will be able to implement them.
 
@@ -38,6 +39,7 @@ Command structure: [command_name] [command_target] [command_args]
     -- "edit" or "e" -> Modify current game state by editing parameters of itself, poker hand, existing joker card or playing card in hand
     -- "save" -> Save game state to file
     -- "load" -> Load game state from file
+    -- "import" -> Import game state from actual game save file
     -- "help" or "h" -> Display app manual
     -- "quit" or "q" -> Close the app
 -> "[command_target]" is used to specify what game objects exactly should be affected by the command and these might be one of the following:
