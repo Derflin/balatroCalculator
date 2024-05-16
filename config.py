@@ -342,7 +342,7 @@ COMMANDS = {
         "command_args": [
             {
                 "name": "file",
-                "desc": F"Name of file to be created in \"{DEFAULT_SAVE_DIRECTORY}\" directory, to which the game state will be saved",
+                "desc": F"Name of file to be created in \"{DEFAULT_SAVE_DIRECTORY}\" directory or path to the file, to which the game state will be saved",
                 "required": False,
                 "target": None
             }
@@ -355,7 +355,20 @@ COMMANDS = {
         "command_args": [
             {
                 "name": "file",
-                "desc": F"Name of file located in \"{DEFAULT_SAVE_DIRECTORY}\" directory, from which the game state will be loaded",
+                "desc": F"Name of file located in \"{DEFAULT_SAVE_DIRECTORY}\" directory or path to the file, from which the game state will be loaded",
+                "required": True,
+                "target": None
+            }
+        ]
+    },
+    "import": {
+        "desc": "Import game state from actual game save file",
+        "command_name": ["import"],
+        "command_target": [None],
+        "command_args": [
+            {
+                "name": "file",
+                "desc": F"Name of file located in \"{DEFAULT_SAVE_DIRECTORY}\" directory or path to the file, from which the game state will be loaded",
                 "required": True,
                 "target": None
             }

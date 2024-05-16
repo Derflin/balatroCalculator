@@ -149,8 +149,8 @@ CARD_EDITIONS_STID = {
     "base": 0,
     "foil": 1,
     "holo": 2,
-    "poly": 3,
-    "nega": 4
+    "polychrome": 3,
+    "negative": 4
 }
 
 #[

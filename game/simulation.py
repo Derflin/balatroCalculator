@@ -132,20 +132,20 @@ class Simulation:
 
     def setPlayingCardEnhancment(self, index, enhancment_id):
         if index >= 0 and index < len(self.hand["cards"]):
-            self.hand["cards"][index]["card"].setEnhancment(enhancment_id)
+            self.hand["cards"][index]["card"].setEnhancment(enhancment_id=enhancment_id)
             self.updateSelectedPokerHand()
             return True
         return False
 
     def setPlayingCardEdition(self, index, edition_id):
         if index >= 0 and index < len(self.hand["cards"]):
-            self.hand["cards"][index]["card"].setEdition(edition_id)
+            self.hand["cards"][index]["card"].setEdition(edition_id=edition_id)
             return True
         return False
 
     def setPlayingCardSeal(self, index, seal_id):
         if index >= 0 and index < len(self.hand["cards"]):
-            self.hand["cards"][index]["card"].setSeal(seal_id)
+            self.hand["cards"][index]["card"].setSeal(seal_id=seal_id)
             return True
         return False
 
@@ -222,7 +222,7 @@ class Simulation:
 
     def setJokerEdition(self, index, edition_id):
         if index >= 0 and index < len(self.jokers):
-            self.jokers[index]["card"].setEdition(edition_id)
+            self.jokers[index]["card"].setEdition(edition_id=edition_id)
             return True
         return False
 
@@ -1081,14 +1081,17 @@ class Simulation:
         return export_dict
 
     def fromDict(self, export_dict):
+        # Import state
         self.setState(state=export_dict["state"])
 
+        # Import poker hands
         self.poker_hands = []
         for elem in export_dict["poker_hands"]:
             hand_type = PokerHand()
             hand_type.fromDict(elem["card"])
             self.poker_hands.append(hand_type)
 
+        # Import playing cards
         self.hand = {"type_id": 0, "detected_types": [], "cards": [], "scoring_cards_indexes": []}
         for index, elem in enumerate(export_dict["playing_cards"]):
             self.addPlayingCard(index=index)
@@ -1097,10 +1100,115 @@ class Simulation:
                 self.triggerSelectPlayingCard(index)
             self.hand
 
+        # Import jokers
         self.jokers = []
         for index, elem in enumerate(export_dict["jokers"]):
             self.addJoker(index=index)
             self.jokers[index]["card"].fromDict(elem["card"])
 
+        # Update game state
         self.updateJokerRules()
         self.updateSelectedPokerHand()
+
+    def fromSave(self, export_save):
+        # Import state
+        self.fromSaveImportState(export_save)
+        
+        # Import poker hands
+        self.fromSaveImportPokerHands(export_save)
+
+        # Import playing cards
+        self.hand = {"type_id": 0, "detected_types": [], "cards": [], "scoring_cards_indexes": []}
+        self.fromSaveImportPlayingCards(export_save)
+    
+        # Import jokers
+        self.jokers = []
+        self.fromSaveImportJokers(export_save)
+
+        # Update game state
+        self.updateJokerRules()
+        self.updateSelectedPokerHand()
+
+    def fromSaveImportState(self, export_save):
+        # Prepare state data from save
+        joker_count_max = export_save["GAME"]["starting_params"]["joker_slots"]
+        joker_count_max += 1 if "v_antimatter" in export_save["GAME"]["used_vouchers"] and export_save["GAME"]["used_vouchers"]["v_antimatter"] else 0
+        export_save["GAME"]["used_vouchers"]
+        all_cards_count, stone_card_deck_count, steel_card_deck_count = 0, 0, 0
+        group_data = [export_save["cardAreas"]["deck"], export_save["cardAreas"]["play"], export_save["cardAreas"]["hand"], export_save["cardAreas"]["discard"]]
+        for group in group_data:
+            all_cards_count += group["config"]["card_count"]
+            for card in group["cards"].values():
+                if "Stone Card" in card["ability"]["effect"]:
+                    stone_card_deck_count += 1
+                if "Steel Card" in card["ability"]["effect"]:
+                    steel_card_deck_count += 1
+        discard_remain = export_save["GAME"]["current_round"]["discards_left"] if "current_round" in export_save["GAME"] and "discards_left" in export_save["GAME"]["current_round"] else export_save["GAME"]["round_resets"]["discards"]
+
+
+        save_state = {
+            "skipped_blinds": export_save["GAME"]["skips"],
+            "dollar_count": export_save["GAME"]["dollars"],
+            "joker_count": export_save["cardAreas"]["jokers"]["config"]["card_count"],
+            "joker_count_max": joker_count_max,
+            "card_deck_size": all_cards_count,
+            "stone_card_deck_count": stone_card_deck_count,
+            "steel_card_deck_count": steel_card_deck_count,
+            "discard_remain": discard_remain,
+            "card_deck_remain": export_save["cardAreas"]["deck"]["config"]["card_count"],
+        }
+
+        # Set game state
+        self.setState(save_state)
+
+    def fromSaveImportPokerHands(self, export_save):
+        # Find existing poker hands and update them according to the save export
+        poker_hand_data = export_save["GAME"]["hands"]
+        for index in range(len(self.poker_hands)):
+            name = self.poker_hands[index].getName()
+            details = poker_hand_data[name] if name in poker_hand_data else None
+            if details is not None:
+                self.poker_hands[index].setLevel(details["level"])
+                self.poker_hands[index].setPlayedCount(details["played"])
+
+    def fromSaveImportPlayingCards(self, export_save):
+        # Add new playing cards according to the save export
+        hand_data = export_save["cardAreas"]["hand"]
+        for index in range(hand_data["config"]["card_count"]):
+            card_details = hand_data["cards"][str(index + 1)]
+            card_id = card_details["base"]["id"] - 2
+            self.addPlayingCard(id=card_id)
+
+            self.hand["cards"][index]["card"].setSuit(suit_stid=card_details["base"]["suit"][0])
+            edition_stid = card_details["edition"]["type"] if "edition" in card_details else None
+            self.hand["cards"][index]["card"].setEdition(edition_stid=edition_stid)
+            enhancment_stid = card_details["ability"]["effect"].replace(" ", "_").lower() if card_details["ability"]["effect"] is not None and card_details["ability"]["effect"] != "" else None
+            self.hand["cards"][index]["card"].setEnhancment(enhancment_stid=enhancment_stid)
+            seal_stid = card_details["seal"].replace(" ", "_").lower() if "seal" in card_details else None 
+            self.hand["cards"][index]["card"].setSeal(seal_stid=seal_stid)
+            self.hand["cards"][index]["card"].setAdditionalChip(card_details["ability"]["perma_bonus"])
+            self.hand["cards"][index]["card"].setActive(not card_details["debuff"])
+
+    def fromSaveImportJokers(self, export_save):
+        # Add new jokers according tto the save export
+        joker_data = export_save["cardAreas"]["jokers"]
+        for index in range(joker_data["config"]["card_count"]):
+            card_details = joker_data["cards"][str(index + 1)]
+            card_id = card_details["ability"]["order"] - 1
+            self.addJoker(id=card_id)
+
+            edition_stid = card_details["edition"]["type"] if "edition" in card_details else None
+            self.jokers[index]["card"].setEdition(edition_stid=edition_stid)
+            current_value = None
+            if card_details["ability"]["bonus"] != 0:
+                current_value = card_details["ability"]["bonus"]
+            elif card_details["ability"]["mult"] != 0:
+                current_value = card_details["ability"]["mult"]
+            elif card_details["ability"]["x_mult"] != 1.0:
+                current_value = card_details["ability"]["x_mult"] - 1.0
+            level_step = card_details["ability"]["extra"] if "extra" in card_details["ability"] else None
+            if current_value is not None and level_step is not None:
+                level = current_value / level_step
+                self.jokers[index]["card"].setLevel(level)
+            self.jokers[index]["card"].setAdditionalSellValue(card_details["extra_cost"])
+            self.jokers[index]["card"].setActive(not card_details["debuff"])

@@ -3,7 +3,7 @@ import logging
 
 from config import COMMANDS, TARGETS, STATE_TARGET, POKER_HAND_TARGET, JOKER_TARGET, PLAYING_CARD_TARGET, SEPARATOR, INDENT
 from game.simulation import Simulation
-from utility.file import JsonFile
+from utility.file import JsonFile, JkrFile
 from utility.logger import AppFormatter
 
 class AppCommandLine:
@@ -21,6 +21,7 @@ class AppCommandLine:
             {"name": COMMANDS["edit"]["command_name"], "func": lambda target, args: self.commandEdit(target, args)},
             {"name": COMMANDS["save"]["command_name"], "func": lambda target, args: self.commandSave(target, args)},
             {"name": COMMANDS["load"]["command_name"], "func": lambda target, args: self.commandLoad(target, args)},
+            {"name": COMMANDS["import"]["command_name"], "func": lambda target, args: self.commandImport(target, args)},
             {"name": COMMANDS["help"]["command_name"], "func": lambda target, args: self.commandHelp(target, args)},
             {"name": COMMANDS["quit"]["command_name"], "func": lambda target, args: self.commandQuit(target, args)},
         ]
@@ -393,6 +394,28 @@ class AppCommandLine:
         if game_state_export is not None:
             self.sim.fromDict(game_state_export)
             self.logger.info("Finished loading game state")
+        else:
+            self.logger.info("Stopped command processing")
+            self.logger.error("Issue occured while trying to load the game state")
+            return False
+
+        return True
+    
+    def commandImport(self, command_target, command_args):
+        filename = None if "file" not in command_args else command_args["file"]
+        if filename is None:
+            self.logger.info("Stopped command processing")
+            self.logger.error("Missing required information about \"file\"")
+            return False
+        
+        self.logger.info("Trying to import data from game save file")
+
+        file_manager = JkrFile(filename)
+        save_export = file_manager.read()
+
+        if save_export is not None:
+            self.sim.fromSave(save_export)
+            self.logger.info("Finished importing game state")
         else:
             self.logger.info("Stopped command processing")
             self.logger.error("Issue occured while trying to load the game state")
