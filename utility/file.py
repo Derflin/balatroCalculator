@@ -6,16 +6,16 @@ import re
 
 from config import DEFAULT_SAVE_DIRECTORY
 
-class JsonFile:
-    def __init__(self, file_name):
+class File:
+    def __init__(self, file_name, default_file_name, default_file_extension):
         self.__setLoggers__()
-
+        
         # Set default file name and extension if they weren't provided
         self.file_name = file_name
         if self.file_name is None:
-            self.file_name = "save_" + time.strftime("%Y%m%d-%H%M%S") + ".json"
-        elif not self.file_name.endswith(".json"):
-            self.file_name += ".json"
+            self.file_name = default_file_name + default_file_extension
+        elif not self.file_name.endswith(default_file_extension):
+            self.file_name += default_file_extension
 
         # Set file parent directory based on what was provided through file name
         self.file_dir_path = ""
@@ -29,6 +29,19 @@ class JsonFile:
     def __setLoggers__(self):
         # Set logger for current object
         self.logger = logging.getLogger(__name__)
+
+    def read(self):
+        pass
+
+    def write(self, data):
+        pass
+
+class JsonFile(File):
+    def __init__(self, file_name):
+        # Initialize parent
+        default_file_name = "save_" + time.strftime("%Y%m%d-%H%M%S")
+        default_file_extension = ".json"
+        super().__init__(file_name, default_file_name, default_file_extension)
 
     def read(self):
         parsed_data = None
@@ -56,25 +69,12 @@ class JsonFile:
         
         return self.file_name
     
-class JkrFile:
+class JkrFile(File):
     def __init__(self, file_name):
-        self.__setLoggers__()
-
-        # Set default file name and extension if they weren't provided
-        self.file_name = file_name
-        if self.file_name is None:
-            self.file_name = "save.jkr"
-        elif not self.file_name.endswith(".jkr"):
-            self.file_name += ".jkr"
-
-        # Set file parent directory based on what was provided through file name
-        self.file_dir_path = ""
-        if "/" not in self.file_name:
-            self.file_dir_path = DEFAULT_SAVE_DIRECTORY
-        else:
-            path = self.file_name.rsplit("/", maxsplit=1)
-            self.file_dir_path = path[0] + "/"
-            self.file_name = path[1]
+        # Initialize parent
+        default_file_name = "save"
+        default_file_extension = ".jkr"
+        super().__init__(file_name, default_file_name, default_file_extension)
 
         # Set map to translate JKR format to JSON
         self.map_json = {
@@ -111,6 +111,3 @@ class JkrFile:
         parsed_data = json.loads(parsed_data)
 
         return parsed_data
-
-    def write(self, data):
-        pass
