@@ -3,6 +3,7 @@ import logging
 
 from config import COMMANDS, TARGETS, STATE_TARGET, POKER_HAND_TARGET, JOKER_TARGET, PLAYING_CARD_TARGET, SEPARATOR, INDENT
 from game.simulation import Simulation
+from game.save_manager import SaveManager
 from utility.file import JsonFile, JkrFile
 from utility.logger import AppFormatter
 
@@ -10,6 +11,7 @@ class AppCommandLine:
     def __init__(self):
         self.__setLoggers__()
         self.sim = Simulation()
+        self.save_manager = SaveManager(self.sim)
         self.commands_map = [
             {"name": COMMANDS["show"]["command_name"], "func": lambda target, args: self.commandShow(target, args)},
             {"name": COMMANDS["calc"]["command_name"], "func": lambda target, args: self.commandCalc(target, args)},
@@ -358,61 +360,31 @@ class AppCommandLine:
         return status
 
     def commandSave(self, command_target=None, command_args=None):
-        filename = None if "file" not in command_args else command_args["file"]
+        file_name = None if "file" not in command_args else command_args["file"]
 
-        self.logger.info("Trying to save data to file...")
+        status = self.save_manager.saveGameState(file_name)
 
-        file_manager = JsonFile(filename)
-        game_state_export = self.sim.toDict()
-        saved_filename = file_manager.write(game_state_export)
-
-        if saved_filename is not None:
-            self.logger.info(F"Finished saving game state")
-        else:
-            self.logger.error("Issue occured while trying to save the game state")
-            return False
-
-        return True
+        return status
 
     def commandLoad(self, command_taget=None, command_args=None):
-        filename = None if "file" not in command_args else command_args["file"]
-        if filename is None:
+        file_name = None if "file" not in command_args else command_args["file"]
+        if file_name is None:
             self.logger.error("Missing required information about \"file\"")
             return False
         
-        self.logger.info("Trying to load data from file...")
+        status = self.save_manager.loadGameState(file_name)
 
-        file_manager = JsonFile(filename)
-        game_state_export = file_manager.read()
-        
-        if game_state_export is not None:
-            self.sim.fromDict(game_state_export)
-            self.logger.info("Finished loading game state")
-        else:
-            self.logger.error("Issue occured while trying to load the game state")
-            return False
-
-        return True
+        return status
     
     def commandImport(self, command_target, command_args):
-        filename = None if "file" not in command_args else command_args["file"]
-        if filename is None:
+        file_name = None if "file" not in command_args else command_args["file"]
+        if file_name is None:
             self.logger.error("Missing required information about \"file\"")
             return False
         
-        self.logger.info("Trying to import data from game save file")
+        status = self.save_manager.importGameState(file_name)
 
-        file_manager = JkrFile(filename)
-        save_export = file_manager.read()
-
-        if save_export is not None:
-            self.sim.fromSave(save_export)
-            self.logger.info("Finished importing game state")
-        else:
-            self.logger.error("Issue occured while trying to load the game state")
-            return False
-
-        return True
+        return status
 
     def commandHelp(self, command_target=None, command_args=None):
         if command_target is not None:
