@@ -76,10 +76,13 @@ class AppCommandLine:
                     command_args[arg_name] = arg_value
 
                 status = self.parseCommand(command_name, command_target, command_args)
-                self.logger.info(SEPARATOR)
 
                 if not status:
+                    if self.running:
+                        self.logger.info("Stopped command processing")
+                    self.logger.info(SEPARATOR)
                     break
+                self.logger.info(SEPARATOR)
 
     def parseCommand(self, command_name, command_target, command_args):
         status = True
@@ -92,7 +95,7 @@ class AppCommandLine:
 
         if not found:
             status = False
-            self.logger.info(F"Couldn't find a command called \"{command_name}\"")
+            self.logger.error(F"Couldn't find a command called \"{command_name}\"")
             self.logger.info(F'Please type {self.help_command_string} to check possible commands')
 
         return status and found
@@ -115,7 +118,6 @@ class AppCommandLine:
         elif command_target in PLAYING_CARD_TARGET:
             self.sim.printHand()
         else:
-            self.logger.info("Stopped command processing")
             self.logger.error("Unsupported command target")
             return False
         
@@ -128,7 +130,6 @@ class AppCommandLine:
     def commandSelect(self, command_target=None, command_args=None):
         index = None if "index" not in command_args else command_args["index"]
         if index is None:
-            self.logger.info("Stopped command processing")
             self.logger.error("Missing required information about \"index\"")
             return False
 
@@ -147,7 +148,6 @@ class AppCommandLine:
         index = None if "index" not in command_args else command_args["index"]
         id = None if "id" not in command_args else command_args["id"]
         if id is None:
-            self.logger.info("Stopped command processing")
             self.logger.error("Missing required information about \"id\"")
             return False
 
@@ -173,14 +173,13 @@ class AppCommandLine:
                 self.logger.info("Added new playing card to hand")
 
         else:
-            self.logger.info("Stopped command processing")
             self.logger.error("Unsupported command target")
             return False
         
         if not status:
             self.logger.error("Issue occured while processing the command")
         
-        return True
+        return status
 
     def commandRemove(self, command_target=None, command_args=None):
         index = None if "index" not in command_args else command_args["index"]
@@ -195,7 +194,6 @@ class AppCommandLine:
             if status:
                 self.logger.info("Removed playing card from hand")
         else:
-            self.logger.info("Stopped command processing")
             self.logger.error("Unsupported command target")
             return False
         
@@ -208,7 +206,6 @@ class AppCommandLine:
         index1 = None if "index1" not in command_args else command_args["index1"]
         index2 = None if "index2" not in command_args else command_args["index2"]
         if index1 is None or index2 is None:
-            self.logger.info("Stopped command processing")
             self.logger.error("Missing required information about \"index1\" or \"index2\"")
             return False
 
@@ -222,7 +219,6 @@ class AppCommandLine:
             if status:
                 self.logger.info(F"Changed playing card position in hand from {index1} to {index2}")
         else:
-            self.logger.info("Stopped command processing")
             self.logger.error("Unsupported command target")
             return False
 
@@ -235,7 +231,6 @@ class AppCommandLine:
         index1 = None if "index1" not in command_args else command_args["index1"]
         index2 = None if "index2" not in command_args else command_args["index2"]
         if index1 is None or index2 is None:
-            self.logger.info("Stopped command processing")
             self.logger.error("Missing required information about \"index1\" or \"index2\"")
             return False
 
@@ -249,7 +244,6 @@ class AppCommandLine:
             if status:
                 self.logger.info(F"Swapped positions of playing cards in hand from {index1} and {index2}")
         else:
-            self.logger.info("Stopped command processing")
             self.logger.error("Unsupported command target")
             return False
 
@@ -261,7 +255,6 @@ class AppCommandLine:
     def commandEdit(self, command_target=None, command_args=None):
         index = None if "index" not in command_args else command_args["index"]
         if command_target not in STATE_TARGET and index is None:
-            self.logger.info("Stopped command processing")
             self.logger.error("Missing required information about \"index\"")
             return False
 
@@ -356,7 +349,6 @@ class AppCommandLine:
                 self.logger.info("Updated playing card")
 
         else:
-            self.logger.info("Stopped command processing")
             self.logger.error("Unsupported command target")
             return False
 
@@ -377,7 +369,6 @@ class AppCommandLine:
         if saved_filename is not None:
             self.logger.info(F"Finished saving game state")
         else:
-            self.logger.info("Stopped command processing")
             self.logger.error("Issue occured while trying to save the game state")
             return False
 
@@ -386,7 +377,6 @@ class AppCommandLine:
     def commandLoad(self, command_taget=None, command_args=None):
         filename = None if "file" not in command_args else command_args["file"]
         if filename is None:
-            self.logger.info("Stopped command processing")
             self.logger.error("Missing required information about \"file\"")
             return False
         
@@ -399,7 +389,6 @@ class AppCommandLine:
             self.sim.fromDict(game_state_export)
             self.logger.info("Finished loading game state")
         else:
-            self.logger.info("Stopped command processing")
             self.logger.error("Issue occured while trying to load the game state")
             return False
 
@@ -408,7 +397,6 @@ class AppCommandLine:
     def commandImport(self, command_target, command_args):
         filename = None if "file" not in command_args else command_args["file"]
         if filename is None:
-            self.logger.info("Stopped command processing")
             self.logger.error("Missing required information about \"file\"")
             return False
         
@@ -421,7 +409,6 @@ class AppCommandLine:
             self.sim.fromSave(save_export)
             self.logger.info("Finished importing game state")
         else:
-            self.logger.info("Stopped command processing")
             self.logger.error("Issue occured while trying to load the game state")
             return False
 
