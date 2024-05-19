@@ -111,7 +111,6 @@ Project is licensed under the [MIT](LICENSE) license.
 
 ## TODO
 
-- [] Add type validation for args provided by user
 - [] Add option to trigger more than one card at once
 - [] Automation tests
 - [] Adjust displayed card_rank or card_suit in conditions, to include names apart from IDs (maybe add some kind of tags to message sent to logger and then detect them in logger and replace "object_tag{ID}object_tag" with something like "object_type_name (ID: {id})")

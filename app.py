@@ -1,7 +1,7 @@
 import sys
 import logging
 
-from config import COMMANDS, TARGETS, STATE_TARGET, POKER_HAND_TARGET, JOKER_TARGET, PLAYING_CARD_TARGET, SEPARATOR, INDENT
+from config import COMMANDS, COMMANDS_ARGS_VALIDATORS, TARGETS, STATE_TARGET, POKER_HAND_TARGET, JOKER_TARGET, PLAYING_CARD_TARGET, SEPARATOR, INDENT
 from game.simulation import Simulation
 from game.save_manager import SaveManager
 from utility.file import JsonFile, JkrFile
@@ -66,18 +66,29 @@ class AppCommandLine:
             for command in commands:
                 command_inputs = command.strip().split(" ")
 
+                status = True
                 command_name = command_inputs.pop(0)
                 command_target = None if len(command_inputs) == 0 or command_inputs[0][0] == "-" else command_inputs.pop(0)
                 command_args = {}
                 for elem in command_inputs:
                     args = elem.lstrip("-").split("=")
                     arg_name = args[0]
-                    arg_value = int(args[1]) if args[1].isnumeric() else float(args[1]) if args[1].replace('.', '', 1).isnumeric() else args[1]
+                    if arg_name in COMMANDS_ARGS_VALIDATORS:
+                        try:
+                            arg_value = COMMANDS_ARGS_VALIDATORS[arg_name]["type"](args[1])
+                        except ValueError:
+                            self.logger.error(F"Validation failed for \"{command_name}\" command in argument \"{arg_name}\" - expected \"{COMMANDS_ARGS_VALIDATORS[arg_name]['type'].__name__}\" type")
+                            status = False
+                            break
+                    else:
+                        arg_value = int(args[1]) if args[1].isnumeric() else float(args[1]) if args[1].replace('.', '', 1).isnumeric() else args[1]
+                    
                     if "index" in arg_name:
                         arg_value -= 1
                     command_args[arg_name] = arg_value
-
-                status = self.parseCommand(command_name, command_target, command_args)
+                
+                if status:
+                    status = self.parseCommand(command_name, command_target, command_args)
 
                 if not status:
                     if self.running:

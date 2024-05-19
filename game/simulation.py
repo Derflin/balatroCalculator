@@ -1208,7 +1208,7 @@ class Simulation:
                 current_value = card_details["ability"]["mult"]
             elif card_details["ability"]["x_mult"] != 1.0:
                 current_value = card_details["ability"]["x_mult"] - 1.0
-            level_step = card_details["ability"]["extra"] if "extra" in card_details["ability"] else None
+            level_step = card_details["ability"]["extra"] if "extra" in card_details["ability"] and type(card_details["ability"]["extra"]) in [int, float] else None
             if current_value is not None and level_step is not None:
                 level = int(round(current_value / level_step, 0))
                 self.jokers[index]["card"].setLevel(level)

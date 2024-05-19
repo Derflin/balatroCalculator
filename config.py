@@ -401,3 +401,84 @@ COMMANDS = {
 }
 
 COMMANDS["help"]["command_target"] += [key for key in COMMANDS.keys()]
+
+COMMANDS_ARGS_VALIDATORS = {
+    "index": {
+        "type": int
+    },
+    "index1": {
+        "type": int
+    },
+    "index2": {
+        "type": int
+    },
+    "id": {
+        "type": int
+    },
+    "edition_id": {
+        "type": int
+    },
+    "enhancment_id": {
+        "type": int
+    },
+    "seal_id": {
+        "type": int
+    },
+    "suit_id": {
+        "type": int
+    },
+    "cond_card_suit": {
+        "type": int
+    },
+    "cond_card_rank": {
+        "type": int
+    },
+    "level": {
+        "type": int
+    },
+    "add_sell_value": {
+        "type": int
+    },
+    "add_chip": {
+        "type": int
+    },
+    "skipped_blinds": {
+        "type": int
+    },
+    "dollar_count": {
+        "type": int
+    },
+    "joker_count_max": {
+        "type": int
+    },
+    "card_deck_size": {
+        "type": int
+    },
+    "stone_card_deck_count": {
+        "type": int
+    },
+    "steel_card_deck_count": {
+        "type": int
+    },
+    "discard_remain": {
+        "type": int
+    },
+    "card_deck_remain": {
+        "type": int
+    },
+    "inflation": {
+        "type": int
+    },
+    "discount_rate": {
+        "type": float
+    },
+    "played_count": {
+        "type": int
+    },
+    "active": {
+        "type": int
+    }, 
+    "file": {
+        "type": str
+    },
+}
