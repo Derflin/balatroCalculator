@@ -23,22 +23,14 @@ TARGETS = {
         "command_target": ["playing_card", "pc"]
     }
 }
-
-STATE_TARGET = TARGETS["state"]["command_target"]
-POKER_HAND_TARGET = TARGETS["poker_hand"]["command_target"]
-JOKER_TARGET = TARGETS["joker"]["command_target"]
-PLAYING_CARD_TARGET = TARGETS["playing_card"]["command_target"]
-
-STATE_TARGET_TEXT = F'{TARGETS["state"]["name"]} ({" / ".join([elem for elem in STATE_TARGET])})'
-POKER_HAND_TARGET_TEXT = F'{TARGETS["poker_hand"]["name"]} ({" / ".join([elem for elem in POKER_HAND_TARGET])})'
-JOKER_TARGET_TEXT = F'{TARGETS["joker"]["name"]} ({" / ".join([elem for elem in JOKER_TARGET])})'
-PLAYING_CARD_TARGET_TEXT = F'{TARGETS["playing_card"]["name"]} ({" / ".join([elem for elem in PLAYING_CARD_TARGET])})'
+for key in TARGETS.keys():
+    TARGETS[key]["command_target_text"] = F'{TARGETS[key]["name"]} ({" / ".join([elem for elem in TARGETS[key]["command_target"]])})'
 
 COMMANDS = {
     "show": {
         "desc": "Display information about current game state",
         "command_name": ["show", "sh"],
-        "command_target": [None, STATE_TARGET_TEXT, POKER_HAND_TARGET_TEXT, JOKER_TARGET_TEXT, PLAYING_CARD_TARGET_TEXT],
+        "command_target": [None, TARGETS["state"]["command_target_text"], TARGETS["poker_hand"]["command_target_text"], TARGETS["joker"]["command_target_text"], TARGETS["playing_card"]["command_target_text"]],
         "command_args": []
     },
     "calc": {
@@ -50,7 +42,7 @@ COMMANDS = {
     "select": {
         "desc": "Trigger card selection for a playing card in hand",
         "command_name": ["select", "sl"],
-        "command_target": [None, PLAYING_CARD_TARGET_TEXT],
+        "command_target": [None, TARGETS["playing_card"]["command_target_text"]],
         "command_args": [
             {
                 "name": "index",
@@ -63,7 +55,7 @@ COMMANDS = {
     "add": {
         "desc": "Modify current game state by adding new joker card or playing card to hand",
         "command_name": ["add", "a"],
-        "command_target": [JOKER_TARGET_TEXT, PLAYING_CARD_TARGET_TEXT],
+        "command_target": [TARGETS["joker"]["command_target_text"], TARGETS["playing_card"]["command_target_text"]],
         "command_args": [
             {
                 "name": "index",
@@ -130,7 +122,7 @@ COMMANDS = {
     "remove": {
         "desc": "Modify current game state by removing an existing joker card or playing card from hand",
         "command_name": ["remove", "r"],
-        "command_target": [JOKER_TARGET_TEXT, PLAYING_CARD_TARGET_TEXT],
+        "command_target": [TARGETS["joker"]["command_target_text"], TARGETS["playing_card"]["command_target_text"]],
         "command_args": [
             {
                 "name": "index",
@@ -143,7 +135,7 @@ COMMANDS = {
     "move": {
         "desc": "Modify current game state by changing position of an existing joker card or playing card in hand",
         "command_name": ["move", "m"],
-        "command_target": [JOKER_TARGET_TEXT, PLAYING_CARD_TARGET_TEXT],
+        "command_target": [TARGETS["joker"]["command_target_text"], TARGETS["playing_card"]["command_target_text"]],
         "command_args": [
             {
                 "name": "index1",
@@ -162,7 +154,7 @@ COMMANDS = {
     "swap": {
         "desc": "Modify current game state by swaping position of two existing joker cards or playing cards in hands",
         "command_name": ["swap", "sw"],
-        "command_target": [JOKER_TARGET_TEXT, PLAYING_CARD_TARGET_TEXT],
+        "command_target": [TARGETS["joker"]["command_target_text"], TARGETS["playing_card"]["command_target_text"]],
         "command_args": [
             {
                 "name": "index1",
@@ -181,7 +173,7 @@ COMMANDS = {
     "edit": {
         "desc": "Modify current game state by editing parameters of itself, poker hand, existing joker card or playing card in hand",
         "command_name": ["edit", "e"],
-        "command_target": [STATE_TARGET_TEXT, POKER_HAND_TARGET_TEXT, JOKER_TARGET_TEXT, PLAYING_CARD_TARGET_TEXT],
+        "command_target": [TARGETS["state"]["command_target_text"], TARGETS["poker_hand"]["command_target_text"], TARGETS["joker"]["command_target_text"], TARGETS["playing_card"]["command_target_text"]],
         "command_args": [
             {
                 "name": "skipped_blinds",

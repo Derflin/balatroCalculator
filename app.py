@@ -1,11 +1,17 @@
 import sys
 import logging
 
-from config import COMMANDS, COMMANDS_ARGS_VALIDATORS, TARGETS, STATE_TARGET, POKER_HAND_TARGET, JOKER_TARGET, PLAYING_CARD_TARGET, SEPARATOR, INDENT
+from config import COMMANDS, COMMANDS_ARGS_VALIDATORS, TARGETS, SEPARATOR, INDENT
 from game.simulation import Simulation
 from game.save_manager import SaveManager
 from utility.file import JsonFile, JkrFile
 from utility.logger import AppFormatter
+
+STATE_TARGET = TARGETS["state"]["command_target"]
+POKER_HAND_TARGET = TARGETS["poker_hand"]["command_target"]
+JOKER_TARGET = TARGETS["joker"]["command_target"]
+PLAYING_CARD_TARGET = TARGETS["playing_card"]["command_target"]
+
 
 class AppCommandLine:
     def __init__(self):
