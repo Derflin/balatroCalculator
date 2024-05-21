@@ -317,7 +317,7 @@ JOKERS = [
     {"id": 23, "name": "Marble Joker", "affect_scoring": False, "copy_compat": False, "rarity": JOKER_RARITY_STID["uncommon"], "cost": 6, "scoring_order": None},
     {"id": 24, "name": "Loyalty Card", "affect_scoring": True, "copy_compat": True, "rarity": JOKER_RARITY_STID["uncommon"], "cost": 5, "effect_active": {"b_mul_mult": 4.0}, "scoring_order": GAME_SCORING_ORDER_STID["owned_jokers"]},
     {"id": 25, "name": "8 Ball", "affect_scoring": False, "copy_compat": True, "rarity": JOKER_RARITY_STID["common"], "cost": 5, "scoring_order": None},
-    {"id": 26, "name": "Misprint", "copy_compat": True, "rarity": JOKER_RARITY_STID["common"], "cost": 4, "effect_active": {"b_add_mult": 1, "m_add_mult": [0, 23]}, "scoring_order": GAME_SCORING_ORDER_STID["owned_jokers"]},
+    {"id": 26, "name": "Misprint", "copy_compat": True, "rarity": JOKER_RARITY_STID["common"], "cost": 4, "effect_active": {"b_add_mult": 23}, "scoring_order": GAME_SCORING_ORDER_STID["owned_jokers"], "condition": {"activate_probability": 1.0/24.0}},
     {"id": 27, "name": "Dusk", "affect_scoring": True, "copy_compat": True, "rarity": JOKER_RARITY_STID["uncommon"], "cost": 5, "effect_active": {"a_trigger": 1}, "scoring_order": GAME_SCORING_ORDER_STID["played_hand"]},
     {"id": 28, "name": "Raised Fist", "copy_compat": True, "rarity": JOKER_RARITY_STID["common"], "cost": 5, "effect_active": {"b_add_mult": 2, "m_add_mult": "held_lowest_rank"}, "scoring_order": GAME_SCORING_ORDER_STID["owned_jokers"]},
     {"id": 29, "name": "Chaos the Clown", "affect_scoring": False, "copy_compat": False, "rarity": JOKER_RARITY_STID["common"], "cost": 4, "scoring_order": None},
