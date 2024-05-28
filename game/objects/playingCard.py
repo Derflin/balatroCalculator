@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from config import INDENT
 from game.static import CARD_RANK, CARD_RANK_STID, STONE_CARD_ID, STONE_CARD_RANK, CARD_SUIT, CARD_SUIT_STID, STONE_CARD_SUIT
 from game.objects.cardEdition import CardEdition
@@ -43,7 +45,7 @@ class PlayingCard:
             base_id = id if id is not None else 0
             base_id = base_id if base_id >= 0 and base_id < len(CARD_RANK) else 0
 
-        base_card = CARD_RANK[base_id]
+        base_card = deepcopy(CARD_RANK[base_id])
 
         self.id = base_card["id"]
         self.name = base_card["name"]

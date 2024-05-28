@@ -1,4 +1,5 @@
 import math
+from copy import deepcopy
 
 from config import INDENT
 from game.static import JOKERS, JOKERS_STID, JOKER_RARITY, DEFAULT_DECK_SIZE, CARD_RANK_STID
@@ -53,7 +54,7 @@ class JokerCard:
             base_id = id if id is not None else 0
             base_id = base_id if base_id >= 0 and base_id < len(JOKERS) else 0
 
-        base_joker = JOKERS[base_id]
+        base_joker = deepcopy(JOKERS[base_id])
 
         self.id = base_joker["id"]
         self.name = base_joker["name"]
